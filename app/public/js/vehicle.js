@@ -208,7 +208,7 @@ $(document).on('ready', function() {
         }).join('');
 		$allGearBoxes.html(html);
 		
-		$("#carImage").html("<img src='imgs/cars/"+ gb +".jpg'/>")
+		$("#carImage").html("<img src='imgs/cars/"+ gb.replace(" ","_") +".jpg'/>")
     });
 
 	$("#vehicleList").click(function(){
@@ -234,7 +234,7 @@ $(document).on('ready', function() {
 			$("#upParts").hide();
 			$("#trUpdateVehicle").hide();
 			$("#createNewVehicle").show();
-			$("input[name='upLastServiceDate'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upChassisNumber'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
+			$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upLastServiceDate'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upChassisNumber'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
 				.css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 			$("#allCustomers").css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 		}
@@ -253,7 +253,7 @@ $(document).on('ready', function() {
 				$("input[name='upWarrantyEndDate']").attr("disabled","disabled");
 				$("input[name='upDateofDelivery']").attr("disabled","disabled");
 
-				$("input[name='upLicensePlateNumber'],input[name='upWarrantyStartDate'],input[name='upDateofDelivery'],input[name='upWarrantyEndDate']")
+				$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upLicensePlateNumber'],input[name='upWarrantyStartDate'],input[name='upDateofDelivery'],input[name='upWarrantyEndDate']")
 				.css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 			}
 			else{
@@ -275,7 +275,7 @@ $(document).on('ready', function() {
 			$("input[name='upWarrantyStartDate']").attr("disabled","disabled");
 			$("input[name='upWarrantyEndDate']").attr("disabled","disabled");
 			$("input[name='upDateofDelivery']").attr("disabled","disabled");
-			$("input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upChassisNumber'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
+			$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upChassisNumber'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
 				.css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 			$("#allCustomers").css({'border': '0px','border-bottom': '1px solid #ccc','border-radius': '0px'});
 		}
@@ -340,9 +340,14 @@ $(document).on('ready', function() {
 			var obj = 	{
 							type: "createVehicle",
 							vehicle: {
-								make: $("input[name='Make']").val(),
+								make: $("#allModels").val(),
 								chassisNumber: $("input[name='ChassisNumber']").val(),
-								vin: $("input[name='Vin']").val()								
+								vin: $("input[name='ChassisNumber']").val(),		
+								variant: $("#allModelVariant").val(),
+								engine: $("#allEngines").val(),
+								gearBox: $("#allGearBoxes").val(),
+								color: $("#allColors").val(),
+								image: $($("#carImage").find("img")[0]).attr("src")
 							}
 						};
 
@@ -837,6 +842,15 @@ function connect_to_server(){
 				$("input[name='upDateOfManufacture']").val(moment(data.vehicle.dateOfManufacture).format("YYYY-MM-DD"));
 				$("input[name='upDateofDelivery']").val(data.vehicle.dateofDelivery);
 				$("input[name='upDealer']").val(data.vehicle.dealer.name);
+				
+				$("#upVariant").html(data.vehicle.variant);
+				$("#upEngine").html(data.vehicle.engine);
+				$("#upGearBox").html(data.vehicle.gearBox);
+				$("#upColor").html(data.vehicle.color);
+				$("#cimg").attr("src", data.vehicle.image);
+				//("<img src='"+ data.vehicle.image +"'/>");
+				//$("#carImage").css({"background-image": data.vehicle.image});
+				//$($("#carImage").find("img")[0]).attr("src", data.vehicle.image);
 
 				$("#allCustomers").empty().append('<option id=""></option>')
 				for(var i in valid_customers){

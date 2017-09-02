@@ -364,12 +364,12 @@ func createVehicle(stub shim.ChaincodeStubInterface, args []string) pb.Response 
 	var err error
 	fmt.Println("Running createVehicle")
 
-	if len(args) != 4 {
-		fmt.Println("Incorrect number of arguments. Expecting 4 - Make, ChassisNumber, Vin, User")
-		return shim.Error("Incorrect number of arguments. Expecting 4")
+	if len(args) != 9 {
+		fmt.Println("Incorrect number of arguments. Expecting 9 - Make, ChassisNumber, Vin, User, Variant, Engine, Gear box, color, image")
+		return shim.Error("Incorrect number of arguments. Expecting 9")
 	}
 
-	fmt.Println("Arguments :"+args[0]+","+args[1]+","+args[2]+","+args[3]);
+	fmt.Println("Arguments :"+args[0]+","+args[1]+","+args[2]+","+args[3]+","+args[4]+","+args[5]+","+args[6]+","+args[7]+","+args[8]);
 
 	var bt Vehicle
 	bt.VehicleId = NewUniqueId()
@@ -377,7 +377,12 @@ func createVehicle(stub shim.ChaincodeStubInterface, args []string) pb.Response 
 	bt.ChassisNumber = args[1]
 	bt.Vin = args[2]
 	bt.DateOfManufacture = time.Now().Local().String()
-	
+	bt.Variant = args[4]
+	bt.Engine = args[5]
+	bt.GearBox = args[6]
+	bt.Color = args[7]
+	bt.Image = args[8]
+
 	var own Owner
 	own.Name = ""
 	own.PhoneNumber = ""
@@ -608,7 +613,7 @@ func createPart(stub  shim.ChaincodeStubInterface, args []string) pb.Response {
 }
 
 // Updating existing part in blockchain
-func (t *SimpleChaincode) updatePart(stub  shim.ChaincodeStubInterface, args []string) pb.Response {	
+func updatePart(stub  shim.ChaincodeStubInterface, args []string) pb.Response {	
 	var err error
 	fmt.Println("Running updatePart")
 

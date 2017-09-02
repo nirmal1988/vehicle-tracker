@@ -173,7 +173,15 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 			ordered_hook: options.ordered_hook,
 			cc_function: 'createVehicle',
 			cc_args: [
-				"BMW-X1","12345","12345","BMW"
+				options.args.make,
+				options.args.chassisNumber,
+				options.args.vin,
+				options.args.owner,
+				options.args.variant,
+				options.args.engine,
+				options.args.gearBox,
+				options.args.color,
+				options.args.image
 			],
 		};
 		fcw.invoke_chaincode(enrollObj, opts, cb);
@@ -191,6 +199,22 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 			chaincode_id: g_options.chaincode_id,
 			cc_function: 'getAllVehicles',
 			cc_args: [""]
+		};
+		fcw.query_chaincode(enrollObj, opts, cb);
+	};
+
+	//get vehicle
+	marbles_chaincode.getVehicle = function (options, cb) {
+		logger.info('fetching vehicle');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_version: g_options.chaincode_version,
+			chaincode_id: g_options.chaincode_id,
+			cc_function: 'getVehicle',
+			cc_args: [options.args.vehicleId]
 		};
 		fcw.query_chaincode(enrollObj, opts, cb);
 	};

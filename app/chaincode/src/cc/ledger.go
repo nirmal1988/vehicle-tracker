@@ -72,6 +72,11 @@ type SimpleChaincode struct {
 type Vehicle struct {
 	VehicleId 			string 	`json:"vehicleId"`
 	Make 		string  `json:"make"`
+	Variant 		string  `json:"variant"`
+	Engine 		string  `json:"engine"`
+	GearBox 		string  `json:"gearBox"`
+	Color 		string  `json:"color"`
+	Image 		string  `json:"image"`
 	ChassisNumber 		string  `json:"chassisNumber"`
 	Vin 		string  `json:"vin"`
 	DateOfManufacture 		string  `json:"dateOfManufacture"`	
@@ -264,10 +269,26 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return getMarblesByRange(stub, args)
 	} else if function == "disable_owner"{     //disable a marble owner from appearing on the UI
 		return disable_owner(stub, args)
+	} else if function == "getPart" { 
+		return getPart(stub, args[0])
+	} else if function == "getAllParts" { 
+		return getAllParts(stub, args[0])
+	} else if function == "createPart" {			//create a part
+		return createPart(stub, args)	
+	} else if function == "updatePart" {			//create a part
+		return updatePart(stub, args)	
+	} else if function == "getVehicle" { 
+		return getVehicle(stub, args[0]) 
+	} else if function == "getVehicleByVIN" { 
+		return getVehicleByVIN(stub, args[0]) 
+	} else if function == "getVehicleByChassisNumber" { 
+		return getVehicleByChassisNumber(stub, args[0]) 
 	} else if function == "getAllVehicles" { 
 		return getAllVehicles(stub, args[0]) 
 	} else if function == "createVehicle" {			//create a vehicle
 		return createVehicle(stub, args)	
+	} else if function == "updateVehicle" {			//create a vehicle
+		return updateVehicle(stub, args)	
 	}
 
 	// error out

@@ -302,7 +302,7 @@ input[type=password],
 input[type=number] {
     padding: 9px 14px;
     margin: 5px;
-    color: #565454;
+    color: #000;
     border: 1px solid #D4DCDC;
     border-radius: 30px;
     background: #fff;
@@ -962,4 +962,8 @@ button:disabled:hover {
     #description {
         position: initial
     }
+}
+.read-only-span{
+    color:#000;
+    padding:9px 14px;
 }

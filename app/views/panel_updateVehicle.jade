@@ -9,7 +9,7 @@ tr
 				tr
 					th#customerVehDetHeader(colspan="2" style="font-size: 18px;text-align: left;font-weight: bold;") Customer Vehicle Details
 				tr
-					td
+					td(width="25%")
 						h5 Model:
 					td
 						legend 
@@ -25,28 +25,28 @@ tr
 						h5 Variant:
 					td
 						legend 
-							input(type="text" disabled name="upVariant" placeholder="")						
+							p#upVariant(class="read-only-span")					
 				tr
 					td
 						h5 Engine:
 					td
 						legend 
-							input(type="text" disabled name="upEngine" placeholder="")						
+							p#upEngine(class="read-only-span")
 				tr
 					td
 						h5 Gear Box:
 					td
 						legend 
-							input(type="text" disabled name="upGearBox" placeholder="")						
+							p#upGearBox(class="read-only-span")
 				tr
 					td
 						h5 Color:
 					td
 						legend 
-							input(type="text" disabled name="upColor" placeholder="")						
+							p#upColor(class="read-only-span")
 				tr
 					td
-						h5 Vehicle Owner:
+						h5 Owner:
 					td
 						legend 			
 							select#allCustomers(name="allCustomers")
@@ -61,13 +61,14 @@ tr
 						h5 License Plate Number:
 					td
 						legend 
-							input(type="text" name="upLicensePlateNumber" placeholder="License Plate Number")
+							input(type="text" name="upLicensePlateNumber")
 
 	
 		td(style="width:50%; height:100%; vertical-align:top; border: 1px solid #5596E6; margin:5px; padding:10px;")
 			table(style="width:30%;float:left;margin-top:0px; margin-left:10px")
 				tr(style="border-bottom:0px;")
 					td#carImage(style="width:100px;height:auto;border:0px solid #ccc;")					
+						img#cimg(src="", alt="")
 
 			div#otherDetailsDiv(style="width:100%;")
 				table#otherDetailsTable

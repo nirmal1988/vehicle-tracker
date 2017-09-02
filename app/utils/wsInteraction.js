@@ -66,11 +66,25 @@ module.exports.process_msg = function(ws, data, owner){
 	}
 	else if(data.type == "getVehicle"){
 		console.log("Get vehicle", data.vehicleId);
+		options.args = {
+			vehicleId: data.vehicleId
+		};
+		marbles_lib.getVehicle(options, function (err, resp) {
+			if (err != null) send_err(err, data);
+			else {
+				options.ws.send(JSON.stringify({ msg: 'vehicle', 
+				vehicle: resp.parsed,
+				state: 'finished' 
+				}));
+				//sendMsg({msg: "vehicle", vehicle: JSON.parse(vehicle)});
+			}
+		});
 		//chaincode.invoke.getVehicle([data.vehicleId], cb_got_vehicle);
 	}
 	else if(data.type == "getVehicleByChassisNumber"){
 		console.log("Get vehicle", data.chassisNumber);
 		//chaincode.invoke.getVehicleByChassisNumber([data.chassisNumber], cb_got_vehicleByChassisNumber);
+		
 	}
 	else if(data.type == "getAllVehicles"){
 		console.log("Get All Vehicles", owner);
@@ -94,9 +108,23 @@ module.exports.process_msg = function(ws, data, owner){
 				make: data.vehicle.make,
 				chassisNumber: data.vehicle.chassisNumber,
 				vin: data.vehicle.vin,
-				owner: owner
+				owner: owner,
+				variant: data.vehicle.variant,
+				engine: data.vehicle.engine,
+				gearBox: data.vehicle.gearBox,
+				color: data.vehicle.color,
+				image: data.vehicle.image
 			};
-			marbles_lib.createVehicle(options, cb_invoked_createVehicle);	
+			marbles_lib.createVehicle(options, function (err, resp) {
+				if (err != null) send_err(err, data);
+				else {
+					options.ws.send(JSON.stringify({ msg: 'vehicleCreated', 
+					chassisNumber: data.vehicle.chassisNumber,
+					state: 'finished' 
+					}));
+					//sendMsg({msg: "vehicleCreated", chassisNumber: data.vehicle.chassisNumber});
+				}
+			});
 		}
 	}
 	else if(data.type == "customerVehicle"){

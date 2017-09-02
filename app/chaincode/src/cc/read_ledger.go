@@ -324,7 +324,7 @@ func getAllParts(stub  shim.ChaincodeStubInterface, user string) pb.Response {
 // ============================================================================================================================
 // Get Vehicle Details
 // ============================================================================================================================
-func getVehicle(stub  shim.ChaincodeStubInterface, vehicleId string) pb.Response {
+func getVehicle(stub shim.ChaincodeStubInterface, vehicleId string) pb.Response {
 	fmt.Println("Start find Vehicle")
 	fmt.Println("Looking for Vehicle #" + vehicleId);
 
