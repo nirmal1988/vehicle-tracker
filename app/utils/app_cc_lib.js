@@ -286,7 +286,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 			chaincode_version: g_options.chaincode_version,
 			chaincode_id: g_options.chaincode_id,
 			cc_function: 'getAllVehicles',
-			cc_args: [""]
+			cc_args: [options.args.owner]
 		};
 		fcw.query_chaincode(enrollObj, opts, cb);
 	};

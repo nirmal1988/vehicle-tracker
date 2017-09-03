@@ -101,6 +101,9 @@ module.exports.process_msg = function(ws, data, owner){
 	else if(data.type == "getAllVehicles"){
 		console.log("Get All Vehicles", owner);
 		//chaincode.invoke.getAllVehicles([""], cb_got_allvehicles);
+		options.args = {
+			owner: ""
+		};
 		marbles_lib.getAllVehicles(options, function (err, resp) {
 			if (err != null) send_err(err, data);
 			else {
@@ -141,10 +144,36 @@ module.exports.process_msg = function(ws, data, owner){
 	}
 	else if(data.type == "customerVehicle"){
 		console.log("Get Customer Vehicle", owner);
+		options.args = {
+			owner: owner
+		};
+		marbles_lib.getAllVehicles(options, function (err, resp) {
+			if (err != null) send_err(err, data);
+			else {
+				options.ws.send(JSON.stringify({ msg: 'customerVehicle', 
+				vehicles: resp.parsed.vehicles,
+				state: 'finished' 
+				}));
+				//sendMsg({msg: "customerVehicle", vehicles: JSON.parse(customerVehicle).vehicles});
+			}
+		});
 		//chaincode.invoke.getAllVehicles([owner], cb_got_customerVehicle);
 	}
 	else if(data.type == "getCustomerVehicleDetails"){
 		console.log("------ Get Customer Vehicle Details", data.vehicleId);
+		options.args = {
+			vehicleId: data.vehicleId
+		};
+		marbles_lib.getVehicle(options, function (err, resp) {
+			if (err != null) send_err(err, data);
+			else {
+				options.ws.send(JSON.stringify({ msg: 'customerVehicleDetails', 
+				vehicle: resp.parsed,
+				state: 'finished' 
+				}));
+				//sendMsg({msg: "customerVehicleDetails", vehicle: JSON.parse(vehicle)});
+			}
+		});
 		//chaincode.invoke.getVehicle([data.vehicleId], cb_got_customerVehicleDetails);
 	}
 	else if(data.type == "updateVehicle"){
