@@ -157,6 +157,60 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 		fcw.invoke_chaincode(enrollObj, opts, cb);
 	};
 
+	//create part
+	marbles_chaincode.createPart = function (options, cb) {
+		console.log('');
+		logger.info('Creating Vehicle...');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_id: g_options.chaincode_id,
+			chaincode_version: g_options.chaincode_version,
+			event_url: g_options.event_url,
+			endorsed_hook: options.endorsed_hook,
+			ordered_hook: options.ordered_hook,
+			cc_function: 'createPart',
+			cc_args: [
+				options.args.partId,
+				options.args.productCode,
+				options.args.dateOfManufacture,
+				options.args.user
+			],
+		};
+		fcw.invoke_chaincode(enrollObj, opts, cb);
+	};
+
+	//update part
+	marbles_chaincode.updatePart = function (options, cb) {
+		console.log('');
+		logger.info('Creating Vehicle...');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_id: g_options.chaincode_id,
+			chaincode_version: g_options.chaincode_version,
+			event_url: g_options.event_url,
+			endorsed_hook: options.endorsed_hook,
+			ordered_hook: options.ordered_hook,
+			cc_function: 'updatePart',
+			cc_args: [
+				options.args.partId,
+				options.args.vehicleId,
+				options.args.dateOfDelivery,
+				options.args.dateOfInstallation,
+				options.args.user,
+				options.args.warrantyStartDate,
+				options.args.warrantyEndDate,
+				options.args.ttype
+			],
+		};
+		fcw.invoke_chaincode(enrollObj, opts, cb);
+	};
+
 	//create vehicle
 	marbles_chaincode.createVehicle = function (options, cb) {
 		console.log('');
@@ -187,6 +241,40 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 		fcw.invoke_chaincode(enrollObj, opts, cb);
 	};
 
+	//create vehicle
+	marbles_chaincode.updateVehicle = function (options, cb) {
+		console.log('');
+		logger.info('Updating Vehicle...');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_id: g_options.chaincode_id,
+			chaincode_version: g_options.chaincode_version,
+			event_url: g_options.event_url,
+			endorsed_hook: options.endorsed_hook,
+			ordered_hook: options.ordered_hook,
+			cc_function: 'updateVehicle',
+			cc_args: [
+				options.args.vehicleId, 
+				options.args.ttype, 
+				options.args.vehicleOwner.name, options.args.vehicleOwner.phoneNumber, options.args.vehicleOwner.email, 
+				options.args.dealer.name, options.args.dealer.phoneNumber, options.args.dealer.email, 
+				options.args.licensePlateNumber, 
+				options.args.dateofDelivery, 
+				options.args.warrantyStartDate, 
+				options.args.warrantyEndDate, 
+				options.args.owner, 
+				options.args.parts,
+				options.args.serviceDone,
+				options.args.serviceDescription
+			],
+		};
+		fcw.invoke_chaincode(enrollObj, opts, cb);
+	};
+
+
 	//get vehicle
 	marbles_chaincode.getAllVehicles = function (options, cb) {
 		logger.info('fetching all vehicles');
@@ -215,6 +303,70 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 			chaincode_id: g_options.chaincode_id,
 			cc_function: 'getVehicle',
 			cc_args: [options.args.vehicleId]
+		};
+		fcw.query_chaincode(enrollObj, opts, cb);
+	};
+
+	//get vehicle by vin
+	marbles_chaincode.getVehicleByVIN = function (options, cb) {
+		logger.info('fetching vehicle');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_version: g_options.chaincode_version,
+			chaincode_id: g_options.chaincode_id,
+			cc_function: 'getVehicleByVIN',
+			cc_args: [options.args.vin]
+		};
+		fcw.query_chaincode(enrollObj, opts, cb);
+	};
+
+	//get vehicle by chassis number
+	marbles_chaincode.getVehicleByChassisNumber = function (options, cb) {
+		logger.info('fetching vehicle');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_version: g_options.chaincode_version,
+			chaincode_id: g_options.chaincode_id,
+			cc_function: 'getVehicleByChassisNumber',
+			cc_args: [options.args.chassisNumber]
+		};
+		fcw.query_chaincode(enrollObj, opts, cb);
+	};
+
+	//get part
+	marbles_chaincode.getPart = function (options, cb) {
+		logger.info('fetching part');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_version: g_options.chaincode_version,
+			chaincode_id: g_options.chaincode_id,
+			cc_function: 'getPart',
+			cc_args: [options.args.partId]
+		};
+		fcw.query_chaincode(enrollObj, opts, cb);
+	};
+
+	//get all parts
+	marbles_chaincode.getAllParts = function (options, cb) {
+		logger.info('fetching all parts');
+
+		var opts = {
+			peer_urls: g_options.peer_urls,
+			peer_tls_opts: g_options.peer_tls_opts,
+			channel_id: g_options.channel_id,
+			chaincode_version: g_options.chaincode_version,
+			chaincode_id: g_options.chaincode_id,
+			cc_function: 'getAllParts',
+			cc_args: [""]
 		};
 		fcw.query_chaincode(enrollObj, opts, cb);
 	};

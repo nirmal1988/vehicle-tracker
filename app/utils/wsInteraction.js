@@ -83,8 +83,20 @@ module.exports.process_msg = function(ws, data, owner){
 	}
 	else if(data.type == "getVehicleByChassisNumber"){
 		console.log("Get vehicle", data.chassisNumber);
+		options.args = {
+			chassisNumber: data.chassisNumber
+		};
+		marbles_lib.getVehicleByChassisNumber(options, function (err, resp) {
+			if (err != null) send_err(err, data);
+			else {
+				options.ws.send(JSON.stringify({ msg: 'vehicle', 
+				vehicle: resp.parsed,
+				state: 'finished' 
+				}));
+				//sendMsg({msg: "vehicle", vehicle: JSON.parse(vehicle)});
+			}
+		});
 		//chaincode.invoke.getVehicleByChassisNumber([data.chassisNumber], cb_got_vehicleByChassisNumber);
-		
 	}
 	else if(data.type == "getAllVehicles"){
 		console.log("Get All Vehicles", owner);
@@ -138,7 +150,33 @@ module.exports.process_msg = function(ws, data, owner){
 	else if(data.type == "updateVehicle"){
 		console.log("Update Vehicle ", data, owner);
 		if(data.vehicle){			
-			// chaincode.invoke.updateVehicle([data.vehicle.vehicleId, 
+			options.args = {
+				vehicleId: data.vehicle.vehicleId, 
+				ttype: data.vehicle.ttype, 
+				vehicleOwner: data.vehicle.owner,
+				dealer: data.vehicle.dealer, 
+				licensePlateNumber: data.vehicle.licensePlateNumber, 
+				dateofDelivery: data.vehicle.dateofDelivery, 
+				warrantyStartDate: data.vehicle.warrantyStartDate, 
+				warrantyEndDate: data.vehicle.warrantyEndDate, 
+				owner: owner, 
+				parts: data.vehicle.parts,
+				serviceDone: data.vehicle.serviceDone,
+				serviceDescription: data.vehicle.serviceDescription
+			};
+			marbles_lib.updateVehicle(options, function (err, resp) {
+				if (err != null) send_err(err, data);
+				else {
+					options.ws.send(JSON.stringify({ msg: 'vehicleUpdated', 
+					chassisNumber: data.vehicle.chassisNumber,
+					state: 'finished' 
+					}));
+					//sendMsg({msg: "vehicleUpdated", chassisNumber: data.vehicle.chassisNumber});
+				}
+			});
+
+			// chaincode.invoke.updateVehicle([
+			//	data.vehicle.vehicleId, 
 			// 	data.vehicle.ttype, 
 			// 	data.vehicle.owner.name, data.vehicle.owner.phoneNumber, data.vehicle.owner.email, 
 			// 	data.vehicle.dealer.name, data.vehicle.dealer.phoneNumber, data.vehicle.dealer.email, 

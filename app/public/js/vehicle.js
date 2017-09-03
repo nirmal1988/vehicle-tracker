@@ -255,6 +255,8 @@ $(document).on('ready', function() {
 
 				$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upLicensePlateNumber'],input[name='upWarrantyStartDate'],input[name='upDateofDelivery'],input[name='upWarrantyEndDate']")
 				.css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
+
+				$("#allCustomers").css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 			}
 			else{
 				$("input[name='upLicensePlateNumber'],input[name='upWarrantyStartDate'],input[name='upDateofDelivery'],input[name='upWarrantyEndDate']")
@@ -275,9 +277,9 @@ $(document).on('ready', function() {
 			$("input[name='upWarrantyStartDate']").attr("disabled","disabled");
 			$("input[name='upWarrantyEndDate']").attr("disabled","disabled");
 			$("input[name='upDateofDelivery']").attr("disabled","disabled");
-			$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upChassisNumber'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
+			$("input[name='upLastServiceDate'],input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upChassisNumber'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
 				.css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
-			$("#allCustomers").css({'border': '0px','border-bottom': '1px solid #ccc','border-radius': '0px'});
+			$("#allCustomers").css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 		}
 	});
 	
