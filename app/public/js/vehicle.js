@@ -30,7 +30,7 @@ var allModelVariants = {
 	'BMW X5': ['xDrive 30d Expedition', 'xDrive30d Pure Experience', 'xDrive 30d M Sport'],
 	'BMW X6': ['xDrive40d M Sport', 'M Coupe']
 }
-var allColors = ["Alpine White", "Black Sapphire", "Sparkling Brown", "Space Grey", "Carbon Black", "Long Beach Blue", "Donington Grey", "Silver Stone", "Melbourne Red", "Mineral White"];
+var allColors = ["Alpine White", "Black Sapphire", "Carbon Black", "Donington Grey", "Long Beach Blue", "Melbourne Red", "Mineral White", "Silver Stone", "Space Grey", "Sparkling Brown"];
 
 var allEngines = {
 	'BMW X1': ['1998 cc, Petrol, 189 bhp @ 5000 RPM power', '1995 cc, Diesel, 188 bhp @ 4000 RPM power'],
@@ -171,6 +171,7 @@ $(document).on('ready', function() {
 			var _selected = "";					
 			$("#allModels").append('<option '+ _selected +' id="'+ allVehicleModels[i] +'">'+ allVehicleModels[i] +'</option>')
 		}
+		$("#allModels").change();
 
 		$("#allColors").empty();
 		for(var i in allColors){
@@ -182,7 +183,7 @@ $(document).on('ready', function() {
 		console.log('allModels dropdown change');
 
 		var $variantDropdown = $('#allModelVariant');
-		
+		$variantDropdown.html('');
 		var variant = $(this).val(), variants = allModelVariants[variant] || [];
         
         var html = $.map(variants, function(variantValue){
@@ -191,7 +192,6 @@ $(document).on('ready', function() {
 		$variantDropdown.html(html);
 		
 		var $allEngines = $('#allEngines');
-		
 		var engine = $(this).val(), engines = allEngines[engine] || [];
         
         var html = $.map(engines, function(eval){
@@ -200,7 +200,6 @@ $(document).on('ready', function() {
 		$allEngines.html(html);
 		
 		var $allGearBoxes = $('#allGearBoxes');
-		
 		var gb = $(this).val(), gbs = allGearBoxes[gb] || [];
         
         var html = $.map(gbs, function(eval){

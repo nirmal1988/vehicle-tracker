@@ -313,9 +313,7 @@ select {
     border: 1px solid #D4DCDC;
     background: #fff;
     min-width: 198px;
-    border-radius: 7px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    border-radius: 7px;    
     height: 36px;
     color: #000;
 }

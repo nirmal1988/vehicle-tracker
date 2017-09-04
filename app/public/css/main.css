@@ -198,8 +198,6 @@ select {
   background: white;
   min-width: 190px;
   border-radius: 30px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   height: 32px; }
 
 small {

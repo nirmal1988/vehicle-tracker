@@ -45,7 +45,7 @@ html
 				});
 				function showPanel(show){
 					console.log('show', show);
-					if(show == '' || show == 'new batch' || show == 'newbatch') show = 'newBatch';		//default
+					if(show == '' || show == 'vehicle') show = 'vehicle';		//default
 					if(bag.session.user_role && bag.session.user_role.toUpperCase() === "dealer".toUpperCase()) {
 						show = 'dashboard';
 					}
