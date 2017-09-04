@@ -28,6 +28,30 @@ tr
 							input(type="text" disabled name="upVin" placeholder="")
 				tr
 					td
+						h5 Variant:
+					td
+						legend 
+							p#upVariant(class="read-only-span")					
+				tr
+					td
+						h5 Engine:
+					td
+						legend 
+							p#upEngine(class="read-only-span")
+				tr
+					td
+						h5 Gear Box:
+					td
+						legend 
+							p#upGearBox(class="read-only-span")
+				tr
+					td
+						h5 Color:
+					td
+						legend 
+							p#upColor(class="read-only-span")
+				tr
+					td
 						h5 Vehicle Owner:
 					td
 						legend 			
@@ -47,6 +71,11 @@ tr
 
 	
 		td(style="width:50%; height:100%; vertical-align:top; border: 1px solid #5596E6; margin:5px; padding:10px;")
+			table(style="width:100%;float:left;margin-top:0px; margin-left:10px")
+				tr(style="border-bottom:0px;")
+					td#carImage(style="border:0px solid #ccc;")					
+						img#cimg(src="", alt="" style="width:auto;height:200px;border:0px solid #ccc;")
+
 			div#otherDetailsDiv(style="width:100%;")
 				table#otherDetailsTable
 					tr

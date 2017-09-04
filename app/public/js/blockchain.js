@@ -30,6 +30,21 @@ function show_details(id){
 	if(left < 0) left = 0;
 	console.log(blocks[id]);
 	var html = "<p class=\"blckLegend\"> Block Height: " + blocks[id].id + "</p>";
+	html += "<hr class=\"line\"/><p>Created: &nbsp;" + formatDate(blocks[id].blockstats.txs[0].timestamp, "%M-%d-%Y %I:%m%p") + " UTC</p>";
+	html += "<p> Tx Id: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + blocks[id].blockstats.txs[0].tx_id + "</p>";	
+	html += "<p> CC ID:  &nbsp;&nbsp;&nbsp;&nbsp;" + blocks[id].blockstats.txs[0].chaincode_id + "</p>";
+
+	if (blocks[id].blockstats.txs[0].params_debug && blocks[id].blockstats.txs[0].params_debug.finalStr){
+		html += "<p> Payload:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + blocks[id].blockstats.txs[0].params_debug.finalStr + "</p>";
+	}
+	$("#details").html(html).css("left", left).fadeIn();
+}
+
+function show_details_old(id){
+	var left = event.pageX - $("#details").parent().offset().left - 50;
+	if(left < 0) left = 0;
+	console.log(blocks[id]);
+	var html = "<p class=\"blckLegend\"> Block Height: " + blocks[id].id + "</p>";
 	html += "<hr class=\"line\"/><p>Created: &nbsp;" + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, "%M-%d-%Y %I:%m%p") + " UTC</p>";
 	html += "<p> UUID: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + blocks[id].blockstats.transactions[0].txid + "</p>";
 	html += "<p> Type:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + blocks[id].blockstats.transactions[0].type + "</p>";
@@ -56,12 +71,14 @@ function new_block(newblck){
 }
 
 function build_block(id){
-	$("#blockWrap").append("<div class=\"block\">" +  nDig(id, 3) + "</div>");
-	$(".block:last").animate({opacity: 1, left: (block * 36)}, 600, function(){
-		$(".lastblock").removeClass("lastblock");
-		$(".block:last").addClass("lastblock");
-	});
-	block++;
+	if(id){
+		$("#blockWrap").append("<div class=\"block\">" +  nDig(id, 3) + "</div>");
+		$(".block:last").animate({opacity: 1, left: (block * 36)}, 600, function(){
+			$(".lastblock").removeClass("lastblock");
+			$(".block:last").addClass("lastblock");
+		});
+		block++;
+	}
 }
 
 function move_on_down(){
@@ -77,3 +94,4 @@ function clear_blocks(){
 	blocks = [];
 	$(".block").remove();
 }
+

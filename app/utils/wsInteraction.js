@@ -63,7 +63,8 @@ module.exports.process_msg = function(ws, data, owner){
 	if(data.type == "chainstats"){
 		console.log("Chainstats msg");
 		//ibc.chain_stats(cb_chainstats);		
-	}
+		marbles_lib.channel_stats(null, cb_chainstats);
+	}	
 	else if(data.type == "getVehicle"){
 		console.log("Get vehicle", data.vehicleId);
 		options.args = {
@@ -370,7 +371,7 @@ module.exports.process_msg = function(ws, data, owner){
 	
 	//call back for getting the blockchain stats, lets get the block height now
 	var chain_stats = {};
-	function cb_chainstats(e, stats){
+	function cb_chainstats_old(e, stats){
 		chain_stats = stats;
 		if(stats && stats.height){
 			var list = [];
@@ -422,4 +423,81 @@ module.exports.process_msg = function(ws, data, owner){
 		if (err) sendMsg({ msg: 'tx_step', state: 'ordering_failed' });
 		else sendMsg({ msg: 'tx_step', state: 'committing' });
 	}
+	var blockHistoryHeight = 0;
+	function cb_chainstats (err, resp) {
+		var newBlock = false;
+		if (err != null) {
+			var eObj = {
+				msg: 'error',
+				e: err,
+			};
+			if (options.ws) options.ws.send(JSON.stringify(eObj)); 								//send to a client
+			else broadcast(eObj);																//send to all clients
+		} else {
+			if (resp && resp.height && resp.height.low) {
+				
+				if (resp.height.low > known_height && known_height !=0) {
+						logger.info('New block detected!', resp.height.low, resp);
+						known_height = resp.height.low;
+						newBlock = true;
+						logger.debug('[checking] there are new things, sending to all clients');
+						
+						var g_options = {block_delay: helper.getBlockDelay()}
+						marbles_lib.query_block(resp.height.low-1,null, function (err, resp) {
+							var newBlock = false;
+							if (err != null) {
+								var eObj = {
+									msg: 'error',
+									e: err,
+								};
+								if (options.ws) options.ws.send(JSON.stringify(eObj)); 								//send to a client
+							} else {
+								blockChain.push(resp.parsed);
+								options.ws.send(JSON.stringify({ msg: 'newBlock', 
+								blocks: resp.parsed,
+								state: 'finished' 
+								}));
+							}
+						});
+					} else {
+						known_height = resp.height.low;
+						logger.debug('[checking] on demand req, sending to a client');
+						for (var i=0;i<resp.height.low;i++){
+							if(!blockChain[i])
+								blockChain.push(null);
+						}
+						getBlockDetails(resp.height.low);
+					}
+				
+			}
+		}
+	}
+
+	var blockChain = [];
+	function getBlockDetails(blockNumber){
+		var g_options = {block_delay: helper.getBlockDelay()}
+		marbles_lib.query_block(blockNumber-1,null, function (err, resp) {
+			if (err != null) {
+				var eObj = {
+					msg: 'error',
+					e: err,
+				};
+				if (options.ws) options.ws.send(JSON.stringify(eObj)); 								//send to a client
+			} else {
+				blockChain[resp.parsed.block_id] = resp.parsed;
+				blockHistoryHeight++;
+				if(resp.parsed.block_id > 0 && (blockHistoryHeight < 10) ){
+					
+					getBlockDetails(resp.parsed.block_id);
+				}
+				else{
+					options.ws.send(JSON.stringify({ msg: 'blockChain', 
+					blocks: blockChain,
+					state: 'finished' 
+					}));
+				}
+			}
+		});
+	}
 };
+

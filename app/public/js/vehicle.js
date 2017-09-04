@@ -650,7 +650,7 @@ function connect_to_server(){
 		connected = true;
 		clear_blocks();
 		$("#errorNotificationPanel").fadeOut();
-		ws.send(JSON.stringify({type: "chainstats", v:2}));
+		motinotBlocks();		
 		if(user.username && bag.session.user_role) {
 			$('#spinner2').show();
 			$('#openTrades').hide();
@@ -670,7 +670,13 @@ function connect_to_server(){
 				}
 			});
 		}
+	}
 
+	function motinotBlocks(){
+		ws.send(JSON.stringify({type: "chainstats", v:2}));
+		setTimeout(function() {
+			motinotBlocks();
+		}, 3000);
 	}
 
 	function onClose(evt){
@@ -722,6 +728,13 @@ function connect_to_server(){
 				$("input[name='upDateOfManufacture']").val(moment(data.vehicle.dateOfManufacture).format("YYYY-MM-DD"));
 				$("input[name='upDateofDelivery']").val(data.vehicle.dateofDelivery);
 				$("input[name='upDealer']").val(data.vehicle.dealer.name);
+
+				$("#upVariant").html(data.vehicle.variant);
+				$("#upEngine").html(data.vehicle.engine);
+				$("#upGearBox").html(data.vehicle.gearBox);
+				$("#upColor").html(data.vehicle.color);
+				$("#cimg").attr("src", data.vehicle.image);
+
 				// list parts
 				var str = "";
                 for(var i in data.vehicle.parts){
@@ -1090,6 +1103,22 @@ function connect_to_server(){
 								};
 					new_block(temp);
 				}									//send to blockchain.js
+			}
+			else if(data.msg === 'blockChain'){
+				$(data.blocks).each(function(b){
+					var temp = {
+						id: this.block_id,
+						blockstats: this
+					};
+					new_block(temp);
+				});
+			}
+			else if (data.msg === 'newBlock') {
+				var temp = {
+					id: data.block_id,
+					blockstats: data
+				};
+				new_block(temp);											// send to blockchain.js
 			}
 			else if(data.msg === 'vehicleCreated'){
 				$("#notificationPanel").animate({width:'toggle'});
