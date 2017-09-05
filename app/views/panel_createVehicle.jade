@@ -8,6 +8,12 @@
 			table#createVehicleTable(style="width:65%;float:left;margin-top: -48px;margin-bottom:70px;")
 				tr
 					td
+						h5 VIN:
+					td
+						legend 
+							input(type="text" name="txtVin" placeholder="")			
+				tr
+					td
 						h5 Model:
 					td
 						legend 
@@ -37,18 +43,6 @@
 					td
 						legend 
 							select#allColors(name="allColors")
-				tr
-					td
-						h5 VIN:
-					td
-						legend 
-							input(type="text" name="ChassisNumber" placeholder="")
-				tr(style="display:none;")
-					td
-						h5 Vin:
-					td
-						legend 
-							input(type="text" name="Vin" placeholder="Vin")								
 				tr
 					td#createPartBut(colspan="2" style="font-size: 12px;")
 						legend

@@ -361,6 +361,13 @@ a:visited {
     line-height: 60px;
     font-size: 15px
 }
+.navigationlink {
+    cursor: pointer;
+    text-decoration: underline;
+    display: inline-block;
+    color: #fff;
+    font-weight: 300;
+}
 #contentPanel {
     min-height: 500px;
     margin: 30px 50px auto
@@ -965,4 +972,10 @@ button:disabled:hover {
 .read-only-span{
     color:#000;
     padding:9px 14px;
+}
+
+#cimg {
+    width: auto;
+    height: 150px;
+    border: 0px solid #ccc;
 }

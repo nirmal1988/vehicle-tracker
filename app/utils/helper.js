@@ -11,14 +11,14 @@ module.exports = function (config_filename, logger) {
 
 	// default config file name
 	if (!config_filename) {
-		config_filename = 'marbles_tls.json';
+		config_filename = 'app_tls.json';
 	}
 
 	var config_path = path.join(__dirname, '../config/' + config_filename);
 	helper.config = require(config_path);													//load the config file
 	var creds_path = path.join(__dirname, '../config/' + helper.config.cred_filename);
 	helper.creds = require(creds_path);														//load the credential file
-	var package_json = require(path.join(__dirname, '../package.json'));					//get release version of marbles from package.json
+	var package_json = require(path.join(__dirname, '../package.json'));					//get release version of app from package.json
 
 	logger.info('Loaded config file', config_path);											//path to config file
 	logger.info('Loaded creds file', creds_path);											//path to the blockchain credentials file
@@ -345,7 +345,7 @@ module.exports = function (config_filename, logger) {
 		return null;
 	}
 
-	// get the channel id on network for marbles
+	// get the channel id on network for app
 	helper.getChannelId = function () {
 		if (helper.creds && helper.creds.channels) {
 			var channels = Object.keys(helper.creds.channels);
@@ -422,7 +422,7 @@ module.exports = function (config_filename, logger) {
 		return getMarblesField('usernames');
 	};
 
-	// get the marbles trading company name
+	// get the app trading company name
 	helper.getCompanyName = function () {
 		return getMarblesField('company');
 	};
@@ -432,7 +432,7 @@ module.exports = function (config_filename, logger) {
 		return getMarblesField('port');
 	};
 
-	// get the status of marbles previous startup
+	// get the status of app previous startup
 	helper.getEventsSetting = function () {
 		if (helper.config['use_events']) {
 			return helper.config['use_events'];
@@ -447,19 +447,19 @@ module.exports = function (config_filename, logger) {
 		return (sec * 1000);
 	};
 
-	// safely retrieve marbles fields
-	function getMarblesField(marbles_field) {
+	// safely retrieve app fields
+	function getMarblesField(app_field) {
 		try {
-			if (helper.config[marbles_field]) {
-				return helper.config[marbles_field];
+			if (helper.config[app_field]) {
+				return helper.config[app_field];
 			}
 			else {
-				logger.warn('"' + marbles_field + '" not found in config json: ' + config_path);
+				logger.warn('"' + app_field + '" not found in config json: ' + config_path);
 				return null;
 			}
 		}
 		catch (e) {
-			logger.warn('"' + marbles_field + '" not found in config json: ' + config_path);
+			logger.warn('"' + app_field + '" not found in config json: ' + config_path);
 			return null;
 		}
 	}
@@ -471,10 +471,10 @@ module.exports = function (config_filename, logger) {
 	helper.makeUniqueId = function () {
 		const channel = helper.getChannelId();
 		const first_peer = helper.getFirstPeerName(channel);
-		return 'marbles-' + helper.getNetworkName() + '-' + channel + '-' + first_peer;
+		return 'app-' + helper.getNetworkName() + '-' + channel + '-' + first_peer;
 	};
 
-	// build the marbles lib module options
+	// build the app lib module options
 	helper.makeMarblesLibOptions = function () {
 		const channel = helper.getChannelId();
 		const first_org = helper.getFirstOrg();
@@ -622,7 +622,7 @@ module.exports = function (config_filename, logger) {
 		return helper.check_for_missing();					//run the next check
 	};
 
-	// check if marbles UI and marbles chaincode work together
+	// check if app UI and app chaincode work together
 	helper.errorWithVersions = function (v) {
 		var version = package_json.version;
 		if (!v || !v.parsed) v = { parsed: '0.x.x' };		//default

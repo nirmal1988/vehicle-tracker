@@ -34,10 +34,10 @@ var logger = new (winston.Logger)({
 
 
 //FOR LOCAL
-process.env["creds_filename"]="marbles_local.json";
+process.env["creds_filename"]="app_local.json";
 var misc = require('./utils/misc.js')(logger);					//random non-blockchain related functions
 misc.check_creds_for_valid_json();
-var helper = require(__dirname + '/utils/helper.js')("marbles_local.json", logger);				//parses our blockchain config file
+var helper = require(__dirname + '/utils/helper.js')("app_local.json", logger);				//parses our blockchain config file
 //FOR BLUEMIX
 //var helper = require(__dirname + '/utils/helper.js')(process.env.creds_filename, logger);				//parses our blockchain config file
 
@@ -47,7 +47,7 @@ var ws_server = require('./utils/websocket_server_side.js')({ block_delay: helpe
 var enrollObj = null;
 var app_lib = null;
 var wss = {};
-var start_up_states = {												//Marbles Startup Steps
+var start_up_states = {												//app Startup Steps
 	checklist: { state: 'waiting', step: 'step1' },					// Step 1 - check config files for somewhat correctness
 	enrolling: { state: 'waiting', step: 'step2' },					// Step 2 - enroll the admin
 	find_chaincode: { state: 'waiting', step: 'step3' },			// Step 3 - find the chaincode on the channel
@@ -158,7 +158,7 @@ if (config_error) {
 } else {
 	broadcast_state('checklist', 'success');		//checklist step is done
 	console.log('\n');
-	logger.info('Using settings in ' + process.env.creds_filename + ' to see if we have launch marbles before...');
+	logger.info('Using settings in ' + process.env.creds_filename + ' to see if we have launch app before...');
 
 	// --- Go Go Enrollment --- //
 	enroll_admin(1, function (e) {
@@ -170,10 +170,10 @@ if (config_error) {
 			logger.info('Success enrolling admin');
 			broadcast_state('enrolling', 'success');
 
-			// --- Setup Marbles Library --- //
+			// --- Setup app Library --- //
 			setup_app_lib(function () {
 
-				// --- Check If We have Started Marbles Before --- //
+				// --- Check If We have Started app Before --- //
 				detect_prev_startup({ startup: true }, function (err) {
 					if (err) {
 						startup_unsuccessful();
@@ -196,7 +196,7 @@ function startup_unsuccessful() {
 	// we wait here for the user to go the browser, then setup_app_lib() will be called from WS msg
 }
 
-// Find if marbles has started up successfully before
+// Find if app has started up successfully before
 function detect_prev_startup(opts, cb) {
 	logger.info('Checking ledger for marble owners listed in the config file');
 	app_lib.read_everything(null, function (err, resp) {			//read the ledger for marble owners
@@ -218,12 +218,12 @@ function detect_prev_startup(opts, cb) {
 	});
 }
 
-//setup marbles library and check if cc is instantiated
+//setup app library and check if cc is instantiated
 function setup_app_lib(cb) {
 	var opts = helper.makeMarblesLibOptions();
 	app_lib = require('./utils/app_cc_lib.js')(enrollObj, opts, fcw, logger);
 	ws_server.setup(wss.broadcast, app_lib);
-	wsInteraction .setup(wss.broadcast, app_lib);
+	wsInteraction.setup(wss.broadcast, app_lib);
 
 	logger.debug('Checking if chaincode is already instantiated or not');
 	const channel = helper.getChannelId();
@@ -335,7 +335,7 @@ function setupWebSocket() {
 							setup_app_lib(function () {
 								detect_prev_startup({ startup: false }, function (err) {
 									if (err) {
-										create_assets(helper.getMarbleUsernames()); 	//builds marbles, then starts webapp
+										create_assets(helper.getMarbleUsernames()); 	//builds app, then starts webapp
 									}
 								});
 							});
@@ -351,7 +351,7 @@ function setupWebSocket() {
 							setup_app_lib(function () {
 								detect_prev_startup({ startup: true }, function (err) {
 									if (err) {
-										create_assets(helper.getMarbleUsernames()); 	//builds marbles, then starts webapp
+										create_assets(helper.getMarbleUsernames()); 	//builds app, then starts webapp
 									}
 								});
 							});

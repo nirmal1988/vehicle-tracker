@@ -1,14 +1,14 @@
 //-------------------------------------------------------------------
-// Marbles Chaincode Library
+// Chaincode Library
 //-------------------------------------------------------------------
 
 module.exports = function (enrollObj, g_options, fcw, logger) {
-	var marbles_chaincode = {};
+	var app_chainCode = {};
 
 	// Chaincode -------------------------------------------------------------------------------
 
 	//check if chaincode exists
-	marbles_chaincode.check_if_already_instantiated = function (options, cb) {
+	app_chainCode.check_if_already_instantiated = function (options, cb) {
 		console.log('');
 		logger.info('Checking for chaincode...');
 
@@ -37,7 +37,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//check chaincode version
-	marbles_chaincode.check_version = function (options, cb) {
+	app_chainCode.check_version = function (options, cb) {
 		console.log('');
 		logger.info('Checking chaincode and ui compatibility...');
 
@@ -48,7 +48,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 			chaincode_id: g_options.chaincode_id,
 			chaincode_version: g_options.chaincode_version,
 			cc_function: 'read',
-			cc_args: ['marbles_ui']
+			cc_args: ['']
 		};
 		fcw.query_chaincode(enrollObj, opts, function (err, resp) {
 			if (err != null) {
@@ -66,7 +66,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//create part
-	marbles_chaincode.createPart = function (options, cb) {
+	app_chainCode.createPart = function (options, cb) {
 		console.log('');
 		logger.info('Creating Vehicle...');
 
@@ -91,7 +91,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//update part
-	marbles_chaincode.updatePart = function (options, cb) {
+	app_chainCode.updatePart = function (options, cb) {
 		console.log('');
 		logger.info('Creating Vehicle...');
 
@@ -120,7 +120,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//create vehicle
-	marbles_chaincode.createVehicle = function (options, cb) {
+	app_chainCode.createVehicle = function (options, cb) {
 		console.log('');
 		logger.info('Creating Vehicle...');
 
@@ -150,7 +150,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//create vehicle
-	marbles_chaincode.updateVehicle = function (options, cb) {
+	app_chainCode.updateVehicle = function (options, cb) {
 		console.log('');
 		logger.info('Updating Vehicle...');
 
@@ -184,7 +184,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 
 
 	//get vehicle
-	marbles_chaincode.getAllVehicles = function (options, cb) {
+	app_chainCode.getAllVehicles = function (options, cb) {
 		logger.info('fetching all vehicles');
 
 		var opts = {
@@ -200,7 +200,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//get vehicle
-	marbles_chaincode.getVehicle = function (options, cb) {
+	app_chainCode.getVehicle = function (options, cb) {
 		logger.info('fetching vehicle');
 
 		var opts = {
@@ -216,7 +216,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//get vehicle by vin
-	marbles_chaincode.getVehicleByVIN = function (options, cb) {
+	app_chainCode.getVehicleByVIN = function (options, cb) {
 		logger.info('fetching vehicle');
 
 		var opts = {
@@ -232,7 +232,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//get vehicle by chassis number
-	marbles_chaincode.getVehicleByChassisNumber = function (options, cb) {
+	app_chainCode.getVehicleByChassisNumber = function (options, cb) {
 		logger.info('fetching vehicle');
 
 		var opts = {
@@ -248,7 +248,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//get part
-	marbles_chaincode.getPart = function (options, cb) {
+	app_chainCode.getPart = function (options, cb) {
 		logger.info('fetching part');
 
 		var opts = {
@@ -264,7 +264,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//get all parts
-	marbles_chaincode.getAllParts = function (options, cb) {
+	app_chainCode.getAllParts = function (options, cb) {
 		logger.info('fetching all parts');
 
 		var opts = {
@@ -280,7 +280,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//register a owner/user
-	marbles_chaincode.register_owner = function (options, cb) {
+	app_chainCode.register_owner = function (options, cb) {
 		console.log('');
 		logger.info('Creating a marble owner...');
 
@@ -310,12 +310,12 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	};
 
 	//build full name
-	marbles_chaincode.build_owner_name = function (username, company) {
+	app_chainCode.build_owner_name = function (username, company) {
 		return build_owner_name(username, company);
 	};
 
 	// get block height of the channel
-	marbles_chaincode.channel_stats = function (options, cb) {
+	app_chainCode.channel_stats = function (options, cb) {
 		var opts = {
 			peer_urls: g_options.peer_urls,
 			peer_tls_opts: g_options.peer_tls_opts
@@ -323,7 +323,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 		fcw.query_channel(enrollObj, opts, cb);
 	};
 
-	marbles_chaincode.query_block = function (blockNumber, options, cb) {
+	app_chainCode.query_block = function (blockNumber, options, cb) {
 		var opts = {
 			peer_urls: g_options.peer_urls,
 			peer_tls_opts: g_options.peer_tls_opts,
@@ -354,6 +354,6 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 		return str;
 	}
 
-	return marbles_chaincode;
+	return app_chainCode;
 };
 

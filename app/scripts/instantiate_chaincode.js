@@ -10,7 +10,7 @@ var logger = new (winston.Logger)({
 });
 
 var args = process.argv.slice(2);
-var config_file = 'marbles_local.json';
+var config_file = 'app_local.json';
 if (args[0]) {
 	config_file = args[0];
 	logger.info('Config file passed in as argument');
