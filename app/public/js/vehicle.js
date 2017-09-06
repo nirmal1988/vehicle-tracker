@@ -684,7 +684,7 @@ function connect_to_server(){
 		ws.send(JSON.stringify({type: "chainstats", v:2}));
 		setTimeout(function() {
 			motinotBlocks();
-		}, 3000);
+		}, 1500);
 	}
 
 	function onClose(evt){
