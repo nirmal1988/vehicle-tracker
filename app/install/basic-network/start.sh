@@ -9,6 +9,7 @@ set -ev
 
 docker-compose -f docker-compose.yml down
 
+#docker-compose -f docker-compose.yml up -d ca.example.com orderer.example.com peer0.org1.example.com
 docker-compose -f docker-compose.yml up -d ca.example.com orderer.example.com peer0.org1.example.com couchdb
 
 # wait for Hyperledger Fabric to start
