@@ -60,6 +60,11 @@ router.route("/customerVehicle").get(function(req, res){
 	check_login(res, req);
 	res.render("customerVehicle", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
 });
+router.route("/validatePart").get(function(req, res){
+	check_login(res, req);
+	res.render("validatePart", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+});
+
 
 router.route("/getPart").post(function(req, res){
 

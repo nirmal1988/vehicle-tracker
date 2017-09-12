@@ -514,25 +514,25 @@ func updateVehicle(stub  shim.ChaincodeStubInterface, args []string) pb.Response
 	if args[13] != "" {
 		p := strings.Split(args[13], ",")
 		var pr Part
-		var prFound string
+		//var prFound string
 		updateStr += ",Parts: "
 		for i := range p {
 			c := strings.Split(p[i], "-")
 			pr.PartId = c[0]
 			pr.ProductCode = c[1]
 
-			for j := range bch.Parts {
-				if bch.Parts[j].PartId == pr.PartId {
-					prFound = "Y"
-				}
-			}
+			// for j := range bch.Parts {
+			// 	if bch.Parts[j].PartId == pr.PartId {
+			// 		prFound = "Y"
+			// 	}
+			// }
 
-			if prFound == "Y" {
-				updateStr += "~Replaced  Part #"+ pr.PartId			
-				prFound = "N"
-			} else{
-				updateStr += "~Added  Part #"+ pr.PartId			
-			}
+			// if prFound == "Y" {
+			// 	updateStr += "~Replaced Part #"+ pr.PartId			
+			// 	prFound = "N"
+			// } else{
+				updateStr += "~Added Part #"+ pr.PartId			
+			//}
 			bch.Parts = append(bch.Parts, pr)
 			serv.Parts = append(serv.Parts, pr)
 		}

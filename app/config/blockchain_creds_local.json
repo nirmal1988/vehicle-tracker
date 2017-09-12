@@ -24,7 +24,7 @@
 				}
 			},
 			"chaincodes": {
-				"cc": "v4.6"
+				"cc": "v4.8"
 			},
 			"x-blockDelay": 10000
 		}

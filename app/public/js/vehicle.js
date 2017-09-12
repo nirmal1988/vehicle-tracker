@@ -72,6 +72,7 @@ $(document).on('ready', function() {
 	if(user.username) {
 		$("#vehiclesnav").show();
 		$("#partsnav").show();
+		$("#validatePartLink").show();
 		// Display tabs based on user's role
 		if (user.username==="MANUFACTURER" || bag.session.user_role.toUpperCase() === "MANUFACTURER"){
 			$('#vehicleDashboardPanel').show();
@@ -128,10 +129,11 @@ $(document).on('ready', function() {
 			$("#serviceHistoryPanelTR").show();
 			
 			$("#batchDetailsTable").hide();		
-			$("#searchBar").css({"width":"100%","text-align":"center"});	
+			$("#searchBar").css({"width":"100%","text-align":"center"});
+			
 		 }
 		 else if(bag.session.user_role && bag.session.user_role.toUpperCase() === "CUSTOMER") {
-			$('#vehicleDashboardPanel').hide();
+			$('#vehicleDashboardPanel').show();
 			$("#createVehicleTable").hide();
 			$("#newVehiclePanel").hide();
 			
@@ -298,12 +300,47 @@ $(document).on('ready', function() {
 
 	$("#scVin").on('keypress', function (e) {
 		if (e.which == 13) {
+			if($("#scVin").val()==""){
+				alert("Please enter Vehicle VIN");
+				return false;
+			}
 			e.preventDefault();
 			$("#vehicleErrorMessage").hide();
 			$("#batchDetailsTable").hide();
 			$("#vehicleDetailsTable").hide();
 			$("#searchBar").css({"width":"20%","text-align":"left"});
 			ws.send(JSON.stringify({type: "getVehicleByChassisNumber", chassisNumber: $("#scVin").val()}));
+		}
+	});
+
+	$("#scPartId").on('keypress', function (e) {
+		if (e.which == 13) {
+			if($("#scPartId").val()==""){
+				alert("Please enter Part Id");
+				return false;
+			}
+			e.preventDefault();
+			$.ajax({
+				url : 'http://localhost:3000/getPart/'+ $("#scPartId").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
+				type : 'GET',				
+				dataType:'json',
+				success : function(data) {              										
+					if(data){
+						onMessage({data: JSON.stringify({msg: 'part', part: data, state: 'finished'})});
+					}
+					else{
+						$("#notFoundPartHeader").html("The entered part '"+ $("#scPartId").val() +"' is not valid.");
+						$("#batchDetailsBody").html("");
+						$("#batchDetailsTable").show();
+					}
+				},
+				error : function(request,error)
+				{
+					$("#bDetHeader").html("<div style='font-size:20px;text-align:left;'>The entered part '"+ $("#scPartId").val() +"' is not valid.</div>");
+					$("#batchDetailsBody").html("");
+					$("#batchDetailsTable").show();
+				}
+			});
 		}
 	});
 
@@ -416,6 +453,12 @@ $(document).on('ready', function() {
 								serviceDescription: $("#upServiceDesc").val()
 							}
 						};
+
+			//rest call to part to update the vin if part is added
+			setTimeout(function(){
+				updatePartVin(_parts);
+			},3000)
+
 			console.log('obj.part :'+obj.vehicle+' obj.part.partId:'+obj.vehicle.vehicleId);
 			if(obj.vehicle && obj.vehicle.vehicleId){
 					console.log('updating vehicle data, sending', obj);
@@ -605,8 +648,6 @@ $(document).on('ready', function() {
 
 	}, 60000);
 
-
-
 	$("#dashboardTable").on('click', 'tr', function() {
 	    var bId = $(this).find('td:first').text() ;
 	    ws.send(JSON.stringify({type: "getPart", partId: bId}));
@@ -617,9 +658,48 @@ $(document).on('ready', function() {
 		if(bId == "" || bId.length != 20) return false;
 	    ws.send(JSON.stringify({type: "getVehicle", vehicleId: bId}));
 	});
-
+	
 });
 
+//rest call to part to update the vin if part is added
+function updatePartVin(_parts){
+	_parts = _parts.replace(/-/g, '');
+	if(_parts && _parts.length > 0){
+		var partId = _parts.split(",")[0];
+		if(partId && partId.length > 0){
+			$.ajax({
+				url : 'http://localhost:3000/updatePartDetails', //'https://vehicle-tracking.mybluemix.net/updatePartDetails',
+				type : 'POST',
+				data: {
+					partId: partId, 
+					vin: $("input[name='upVin']").val(), 
+					tranType: "PART_INSTALLED",
+					vehicleId:"",dateOfDelivery:"",dateOfInstallation: moment().format("YYYY-MM-DD"),
+					warrantyStartDate:moment().format("YYYY-MM-DD"),
+					warrantyEndDate: moment().add("years",1).format("YYYY-MM-DD"), 
+					owner:user.username 
+				},
+				dataType:'json',
+				success : function(data) {              										
+					if(data){
+						if(_parts.indexOf(",") > -1){
+							_parts = _parts.replace(partId+",","");
+						}
+						else{
+							_parts = _parts.replace(partId,"");
+						}
+						if(_parts.length > 1){
+							updatePartVin(_parts);
+						}
+					}
+				},
+				error : function(request,error)
+				{
+				}
+			});
+		}
+	}
+}
 
 // =================================================================================
 // Helper Fun
@@ -633,11 +713,11 @@ function escapeHtml(str) {
 // =================================================================================
 // Socket Stuff
 // =================================================================================
+var connected = false;
+var selectedParts;
 function connect_to_server(){
-	var connected = false;
-	var selectedParts;
 	connect();
-
+}
 	function connect(){
 		var wsUri = "";
 		if(bag.setup.SERVER.EXTURI.indexOf("localhost") > -1){
@@ -666,8 +746,9 @@ function connect_to_server(){
 			//ws.send(JSON.stringify({type: "getAllParts", v: 2}));
 			ws.send(JSON.stringify({type: "customerVehicle", v: 2}));
 			$.ajax({
-				url : 'https://vehicle-tracking.mybluemix.net/getAllParts',
-				type : 'POST',
+				url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', 
+				//'https://vehicle-tracking.mybluemix.net/getAllParts',
+				type : 'GET',
 				dataType:'json',
 				success : function(data) {              										
 					build_Parts(data.parts, null);
@@ -786,7 +867,7 @@ function connect_to_server(){
 				}
 				else if(serv == null || serv.length == 0){
 					servHtml="<tr><td>No service history found.</td></tr>";
-					$("#upServiceHistory").html(servHtml).css({"height":"43px"});
+					//$("#upServiceHistory").html(servHtml).css({"height":"43px"});
 					_lastServDone = moment(data.vehicle.warrantyStartDate);
 				}
 				 servHtml +="</table>";
@@ -834,8 +915,9 @@ function connect_to_server(){
 				////ws.send(JSON.stringify({type: "getAllPartsForUpdateVehicle", v: 2}));
 
 				$.ajax({
-					url : 'https://vehicle-tracking.mybluemix.net/getAllParts',
-					type : 'POST',
+					url : 'http://localhost:3000/getallparts', 
+					//url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', //'https://vehicle-tracking.mybluemix.net/getAllParts',
+					type : 'GET',
 					dataType:'json',
 					success : function(data) {              										
 						var str="<b style='font-weight:bold;text-decoration:underline;'>Add new Parts:</b></br>";
@@ -925,7 +1007,7 @@ function connect_to_server(){
 				}
 				else if(serv == null || serv.length == 0){
 					servHtml="<tr><td>No service history found.</td></tr>";
-					$("#upServiceHistory").html(servHtml).css({"height":"43px"});
+					//$("#upServiceHistory").html(servHtml).css({"height":"43px"});
 					_lastServDone = moment(data.vehicle.warrantyStartDate);
 				}
 				 servHtml +="</table>";
@@ -946,9 +1028,6 @@ function connect_to_server(){
 					if(txs[i].ttype == "CREATE"){
 			          //litem = {avatar:"ion-ios-box-outline", date: tx.vDate, location: tx.location, desc:"ADDED BY ", owner:tx.owner};
 				        html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="icon ion-ios-box-outline"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">ADDED BY <span style="color:#5596E6">' + txs[i].updatedBy +'</span></p>';
@@ -966,9 +1045,6 @@ function connect_to_server(){
 							}
 						});
 			        	html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="ion-ios-shuffle"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">Added/Updated '+ updateStr +'&nbsp;By <span style="color:#5596E6">' + txs[i].updatedBy +'</span></p>';
@@ -994,9 +1070,6 @@ function connect_to_server(){
 							}
 						});
 			        	html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="ion-ios-barcode-outline"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">SERVICE DONE BY <span style="color:#5596E6">' + txs[i].updatedBy +'</span></p>';
@@ -1009,9 +1082,6 @@ function connect_to_server(){
 			        else if(txs[i].ttype == "DELIVERY"){
 			          //litem = {avatar:"ion-ios-barcode-outline", date: data.batch.vDate, location: data.batch.location, desc:"PICKED UP BY ", owner:data.batch.owner};
 			        	html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="ion-ios-shuffle"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">DELIVERED TO <span style="color:#5596E6">' + txs[i].user +'</span></p>';
@@ -1023,9 +1093,6 @@ function connect_to_server(){
 			        else if(txs[i].ttype == "INSTALLED"){
 			          //litem = {avatar:"ion-ios-shuffle", date: data.batch.vDate, location: data.batch.location, desc:"DELIVERED TO ", owner:data.batch.owner};
 			        	html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="ion-ios-barcode-outline"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
@@ -1048,19 +1115,18 @@ function connect_to_server(){
 				$("#batchDetailsTable").show();
 				for(var i=0; i<txs.length; i++){
 					console.log("Trnsaction "+i+" "+txs[i]);
-					$("#bDetHeader").html("PART #" + data.part.partId + ' - <span style="font-size:16px;font-weight:500">' + data.part.productCode + '</span>');
-
-
+					$("#bDetHeader").html("<p>PART Id: " + data.part.partId + "(" + data.part.partName + ")</p>");
 					if(txs[i].ttype == "CREATE"){
-			          //litem = {avatar:"ion-ios-box-outline", date: tx.vDate, location: tx.location, desc:"ADDED BY ", owner:tx.owner};
-				        html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="icon ion-ios-box-outline"></i></div>';
-						html += '</td>';
+						html += '<tr>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">ADDED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
 						html += '<p style="">on ' + txs[i].dateOfManufacture +'</p>';
+						html += '<p style="">Part Code: ' + data.part.partCode +'</p>';
+						html += '<p style="">Part Type: ' + data.part.partType +'</p>';
+						html += '<p style="">Part Name: ' + data.part.partName +'</p>';
+						html += '<p style="">Description: ' + data.part.description +'</p>';
+						
 						html +=	'</div>';
 						html += '</td>';
 						html += '</tr>';
@@ -1068,9 +1134,6 @@ function connect_to_server(){
 			        else if(txs[i].ttype == "DELIVERY"){
 			          //litem = {avatar:"ion-ios-barcode-outline", date: data.batch.vDate, location: data.batch.location, desc:"PICKED UP BY ", owner:data.batch.owner};
 			        	html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="ion-ios-shuffle"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">DELIVERED TO <span style="color:#5596E6">' + txs[i].user +'</span></p>';
@@ -1082,9 +1145,6 @@ function connect_to_server(){
 			        else if(txs[i].ttype == "INSTALLED"){
 			          //litem = {avatar:"ion-ios-shuffle", date: data.batch.vDate, location: data.batch.location, desc:"DELIVERED TO ", owner:data.batch.owner};
 			        	html += '<tr>';
-						html +=	'<td>';
-						html +=	'<div style="font-size: 34px;color:#5596E6;float:right;"><i class="ion-ios-barcode-outline"></i></div>';
-						html += '</td>';
 						html += '<td style="text-align:left;padding-left:20px">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
@@ -1095,7 +1155,18 @@ function connect_to_server(){
 						html +=	'</div>';
 						html += '</td>';
 						html += '</tr>';
-			        }
+					}
+					else if(txs[i].ttype == "PART_INSTALLED"){
+						  html += '<tr>';
+						  html += '<td style="text-align:left;padding-left:20px">';
+						  html +=	'<div style="display: inline-block; vertical-align: middle;">';
+						  html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
+						  html += '<p style="">on ' + txs[i].dateOfInstallation +'</p>';
+						  html += '<p style="">Vehicle Vin: ' + txs[i].vin +'</p>';
+						  html +=	'</div>';
+						  html += '</td>';
+						  html += '</tr>';
+					  }
 				}
 
 				$("#batchDetailsBody").html(html);
@@ -1199,7 +1270,7 @@ function connect_to_server(){
 		console.log("SENT: " + message);
 		ws.send(message);
 	}
-}
+
 
 
 // =================================================================================
