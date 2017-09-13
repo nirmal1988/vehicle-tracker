@@ -9,7 +9,7 @@
 /* global bag */
 /* global $ */
 var ws = {};
-var user = {username: bag.session.username, displayname: bag.session.displayname};
+var user = {username: bag.session.username, displayname: bag.session.displayname, user_role: bag.session.user_role};
 var valid_users = ["SKF", "BOSCH", "STAHLGRUBER", "MMW"];
 
 var valid_customers = bag.session.allUsers.filter(function(_o){
@@ -18,7 +18,7 @@ var valid_customers = bag.session.allUsers.filter(function(_o){
 var valid_dealers = bag.session.allUsers.filter(function(_o){
 	return _o.role == "DEALER";
 });
-
+var partsBlockChainUrl = "http://win10marble1409.cloudapp.net:6001";
 // var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS","password":"passw0rd","role":"CUSTOMER"},
 // {"username":"WILLIAM_LOVELL","displayname":"WILLIAM LOVELL","password":"passw0rd","role":"CUSTOMER"},
 // {"username":"GILBERT_SMITH","displayname":"GILBERT SMITH","password":"passw0rd","role":"CUSTOMER"},
@@ -208,7 +208,7 @@ $(document).on('ready', function() {
 	connect_to_server();
 	if(user.username)
 	{
-		$("#userField").html(user.displayname+ ' ');
+		$("#userField").html(user.displayname+ ' ('+ user.user_role.toLowerCase() +')');
 	}
 
 	// Customize which panels show up for which user
@@ -385,7 +385,6 @@ $(document).on('ready', function() {
 			$("input[name='upWarrantyStartDate']").attr("disabled","disabled");
 			$("input[name='upWarrantyEndDate']").attr("disabled","disabled");
 			$("input[name='upDateofDelivery']").attr("disabled","disabled");
-			//$("#upParts").hide();
 			$("#trUpdateVehicle").hide();
 			$("#createNewVehicle").show();
 			$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upLastServiceDate'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upVin'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
@@ -394,7 +393,6 @@ $(document).on('ready', function() {
 			$("#trServiceDetails").hide();
 		}
 		else if(bag.session.user_role.toUpperCase() === "DEALER"){
-			//$("#upParts").hide();
 			$("#divServiceDue").hide();
 			$("#createNewVehicle").hide();
 			$("#divWarrantyEndDate").hide();
@@ -424,7 +422,6 @@ $(document).on('ready', function() {
 			$("#trServiceDetails").hide();
 		}
 		else if(bag.session.user_role.toUpperCase() === "SERVICE_CENTER"){
-			//$("#upParts").show();
 			$("#divServiceDue").show();
 			$("#createNewVehicle").hide();
 			$("#allCustomers").attr("disabled","disabled");
@@ -472,7 +469,7 @@ $(document).on('ready', function() {
 			}
 			e.preventDefault();
 			$.ajax({
-				url : 'http://localhost:3000/getPart/'+ $("#scPartId").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
+				url : partsBlockChainUrl +'/getPart/'+ $("#scPartId").val(),
 				type : 'GET',				
 				dataType:'json',
 				success : function(data) {              										
@@ -541,7 +538,7 @@ $(document).on('ready', function() {
 			return false;
 		}
 		  $.ajax({
-			url : 'http://localhost:3000/getPart/'+ $("input[name='upPartId']").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
+			url : partsBlockChainUrl +'/getPart/'+ $("input[name='upPartId']").val(),
 			type : 'GET',				
 			dataType:'json',
 			success : function(data) {              										
@@ -564,7 +561,7 @@ $(document).on('ready', function() {
 					}
 
 					//show the part details
-					var _headerDetails = "<p><span>Part Id: </span>"+ data.partId +"("+ data.partName +")</p>";
+					var _headerDetails = "<p><span>Part Id: </span>"+ data.partId +" ("+ data.partName +")</p>";
 					//_headerDetails+= "<p><span>Part Code: </span>"+ data.partCode +"</p>";
 					//_headerDetails+= "<p><span>Part Type: </span>"+ data.partType +"</p>";
 					//_headerDetails+= "<p><span>Part Name: </span>"+ data.partName +"</p>";
@@ -595,9 +592,7 @@ $(document).on('ready', function() {
 				$("#popup-part-details").html("<div style='font-size:20px;text-align:left;'>The selected part '"+$("input[name='upPartId']").val() +"' is not valid.</div>");
 			}
 		  });
-
 		  return;
-
 	});
 
 	$("#createVehicle").click(function(){
@@ -671,13 +666,26 @@ $(document).on('ready', function() {
 				}
 			});
 			
+			var dealerName = "";
+			if($("input[name='upDealer']").val() != ""){
+				var _dealerUserName =  valid_dealers.filter(function(_o){
+					return _o.displayname == $("input[name='upDealer']").val();
+				});
+				if(_dealerUserName && _dealerUserName.length > 0){
+					dealerName = _dealerUserName[0].username;
+				}
+			}
+			else{
+				dealerName = user.username;
+			}
 			var obj = 	{
 							type: "updateVehicle",
 							vehicle: {
 								vehicleId: $("input[name='upVehicleId']").val(),
 								ttype: tranType,
+
 								owner: {name: $('#allCustomers').val(), email: '', phoneNumber: ''},
-								dealer: {name: user.username, email: '', phoneNumber: ''},
+								dealer: {name: dealerName, email: '', phoneNumber: ''},
 								licensePlateNumber:  $("input[name='upLicensePlateNumber']").val(),
 								warrantyStartDate: moment($("input[name='upWarrantyStartDate']").val()).format("YYYY-MMM-DD"),
 								warrantyEndDate: $("input[name='upWarrantyEndDate']").val(),
@@ -898,7 +906,7 @@ function updatePartVin(_parts){
 		var partDet = _parts.split(",")[0];
 		if(partDet && partDet.length > 0){
 			$.ajax({
-				url : 'http://localhost:3000/updatePartDetails', //'https://vehicle-tracking.mybluemix.net/updatePartDetails',
+				url : partsBlockChainUrl +'/updatePartDetails',
 				type : 'POST',
 				data: {
 					partId: partDet.split('^')[0], 
@@ -976,8 +984,7 @@ function connect_to_server(){
 			//ws.send(JSON.stringify({type: "getAllParts", v: 2}));
 			ws.send(JSON.stringify({type: "customerVehicle", v: 2}));
 			$.ajax({
-				url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', 
-				//'https://vehicle-tracking.mybluemix.net/getAllParts',
+				url : partsBlockChainUrl +'/getAllParts', 				
 				type : 'GET',
 				dataType:'json',
 				success : function(data) {              										
@@ -1058,10 +1065,11 @@ function connect_to_server(){
 				$("input[name='upDateofDelivery']").val(data.vehicle.dateofDelivery);
 				
 				if(data.vehicle.dealer.name !=""){
-				var _dealerDisplayName =  bag.session.allUsers.filter(function(_o){
-					return _o.username == data.vehicle.dealer.name;
-				});
-				$("input[name='upDealer']").val(_dealerDisplayName[0].displayname);
+					var _dealerDisplayName =  valid_dealers.filter(function(_o){
+						return _o.username == data.vehicle.dealer.name;
+					});
+					if(_dealerDisplayName.length > 0)
+						$("input[name='upDealer']").val(_dealerDisplayName[0].displayname);
 				}
 				else{
 					$("input[name='upDealer']").val(data.vehicle.dealer.name);
@@ -1076,7 +1084,7 @@ function connect_to_server(){
 				// list parts
 				var str = "";
                 for(var i in data.vehicle.parts){
-                    str += "<div style='padding-top: 2px;'>"+ data.vehicle.parts[i].partId +"-"+ data.vehicle.parts[i].partName +"</div>"
+                    str += "<div style='padding-top: 4px;'><a style='color:blue;cursor:pointer;text-decoration:underline;' onclick=\"openPartDetailsPopup("+ data.vehicle.parts[i].partId +")\">"+ data.vehicle.parts[i].partId +"</a> - "+ data.vehicle.parts[i].partName +"</div>"
                 }
                 $("#upParts").html(str); 
 				
@@ -1160,27 +1168,7 @@ function connect_to_server(){
 				var serv = data.vehicle.vehicleService;
 				var html = ''
 				$("#batchDetailsTable").show();
-				console.log("Trnsaction "+i+" "+txs[i]);
-				////ws.send(JSON.stringify({type: "getAllPartsForUpdateVehicle", v: 2}));
-
-				// $.ajax({
-				// 	url : 'http://localhost:3000/getallparts', 
-				// 	//url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', //'https://vehicle-tracking.mybluemix.net/getAllParts',
-				// 	type : 'GET',
-				// 	dataType:'json',
-				// 	success : function(data) {              										
-				// 		var str="<b style='font-weight:bold;text-decoration:underline;'>Add new Parts:</b></br>";
-				// 		for(var i in data.parts){
-				// 			str += "<span style='float:left; width: 80px;'><input type='checkbox' id='"+ data.parts[i] +"' class='part-un-selected' />"+ data.parts[i] +"</span>"
-				// 		}
-				// 		$("#upParts").html(str);
-				// 	},
-				// 	error : function(request,error)
-				// 	{
-				// 		alert("Request: "+JSON.stringify(request));
-				// 	}
-				// });
-
+				console.log("Trnsaction "+i+" "+txs[i]);				
 				$("#bDetHeader").html("Vin Number #" + data.vehicle.chassisNumber +"");
 				selectedParts = data.vehicle.parts;
 
@@ -1196,10 +1184,11 @@ function connect_to_server(){
 				$("input[name='upDateOfManufacture']").val(moment(data.vehicle.dateOfManufacture).format("YYYY-MM-DD"));
 				$("input[name='upDateofDelivery']").val(data.vehicle.dateofDelivery);
 				if(data.vehicle.dealer.name != ""){
-				var _dealerDisplayName =  bag.session.allUsers.filter(function(_o){
-					return _o.username == data.vehicle.dealer.name;
-				});
-				$("input[name='upDealer']").val(_dealerDisplayName[0].displayname);				
+					var _dealerDisplayName =  valid_dealers.filter(function(_o){
+						return _o.username == data.vehicle.dealer.name;
+					});
+					if(_dealerDisplayName.length > 0)
+						$("input[name='upDealer']").val(_dealerDisplayName[0].displayname);				
 				}
 				else{
 					$("input[name='upDealer']").val(data.vehicle.dealer.name);				
@@ -1224,7 +1213,7 @@ function connect_to_server(){
 				// list parts
 				var str = "";
                 for(var i in data.vehicle.parts){
-                    str += "<div style='padding-top: 2px;'>"+ data.vehicle.parts[i].partId +"-"+ data.vehicle.parts[i].partName +"</div>"
+                    str += "<div style='padding-top: 4px;'><a style='color:blue;cursor:pointer;text-decoration:underline;' onclick=\"openPartDetailsPopup("+ data.vehicle.parts[i].partId +")\">"+ data.vehicle.parts[i].partId +"</a> - "+ data.vehicle.parts[i].partName +"</div>"
                 }
                 $("#upParts").html(str); 
 				
@@ -1376,7 +1365,7 @@ function connect_to_server(){
 				$("#batchDetailsTable").show();
 				for(var i=0; i<txs.length; i++){
 					console.log("Trnsaction "+i+" "+txs[i]);
-					$("#bDetHeader").html("<p>PART Id: " + data.part.partId + "(" + data.part.partName + ")</p>");
+					$("#bDetHeader").html("<p>PART Id: " + data.part.partId + " (" + data.part.partName + ")</p>");
 					html += formatPartTransactions(txs[i], data);
 				}
 
@@ -1481,6 +1470,62 @@ function connect_to_server(){
 		console.log("SENT: " + message);
 		ws.send(message);
 	}
+
+function openPartDetailsPopup(_partId){	
+	  $($(".ui-dialog-buttonset").find("button")[0]).hide();
+	  $("#popup-part-header").html("");
+	  $("#popup-part-details").html("");
+	  $.ajax({
+		url : partsBlockChainUrl +'/getPart/'+ _partId,
+		type : 'GET',				
+		dataType:'json',
+		success : function(data) {              										
+			if(data){
+				//validate if this part is installed in another machine.
+				var tx = data.transactions;
+				//show the part details
+				var _headerDetails = "<p><span>Part Id: </span>"+ data.partId +" ("+ data.partName +")</p>";
+				//_headerDetails+= "<p><span>Part Code: </span>"+ data.partCode +"</p>";
+				//_headerDetails+= "<p><span>Part Type: </span>"+ data.partType +"</p>";
+				//_headerDetails+= "<p><span>Part Name: </span>"+ data.partName +"</p>";
+				//_headerDetails+= "<p><span>Description: </span>"+ data.description +"</p>";
+				$("#popup-part-header").html(_headerDetails);
+
+				var _txDetails = "";
+				_txDetails += "<p class='ui-dialog-title ui-popup-grid-header'>Transactions: </p>";
+				_txDetails += "<table class='part-transactions-popup'>";
+				for(var vi=0;vi<tx.length;vi++){
+					_txDetails += formatPartTransactions(tx[vi], {part: data});
+				}
+				_txDetails += "</table>";
+				_txDetails += "<input type='hidden' id='hdnSelectedPartCode' value='"+ data.partCode +"'>";
+				_txDetails += "<input type='hidden' id='hdnSelectedPartType' value='"+ data.partType +"'>";
+				_txDetails += "<input type='hidden' id='hdnSelectedPartName' value='"+ data.partName +"'>";
+				$("#popup-part-details").html(_txDetails);
+
+				$( "#dialog-confirm" ).dialog({
+					resizable: false,
+					height: "auto",
+					width: 600,
+					dialogClass: 'fixed-dialog', 
+					modal: true,
+					buttons: {
+					  "OK": function() {
+						$( this ).dialog( "close" );
+					  }
+					}
+				  });
+			}
+			else{
+				$("#popup-part-details").html("The selected part '"+ $("input[name='upPartId']").val() +"' is not valid.");					
+			}
+		},
+		error : function(request,error)
+		{
+			$("#popup-part-details").html("<div style='font-size:20px;text-align:left;'>The selected part '"+$("input[name='upPartId']").val() +"' is not valid.</div>");
+		}
+	  });
+}
 
 function formatPartTransactions(tx, data){
 	var html="";
