@@ -652,8 +652,8 @@ th.header {
     top: 55px
 }
 #loginButton {
-    display: block;
-    margin: auto
+    /* display: block; */
+    margin-left: 40px;
 }
 th.headerSortDown {
     background-image: url(../imgs/asc.gif)

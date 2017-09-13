@@ -472,7 +472,7 @@ $(document).on('ready', function() {
 			}
 			e.preventDefault();
 			$.ajax({
-				url : 'http://localhost:3000/getPart/'+ $("#scPartId").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
+				url : 'http://win10marble1409.cloudapp.net:6001/getPart/'+ $("#scPartId").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
 				type : 'GET',				
 				dataType:'json',
 				success : function(data) {              										
@@ -541,7 +541,7 @@ $(document).on('ready', function() {
 			return false;
 		}
 		  $.ajax({
-			url : 'http://localhost:3000/getPart/'+ $("input[name='upPartId']").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
+			url : 'http://win10marble1409.cloudapp.net:6001/getPart/'+ $("input[name='upPartId']").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
 			type : 'GET',				
 			dataType:'json',
 			success : function(data) {              										
@@ -898,7 +898,7 @@ function updatePartVin(_parts){
 		var partDet = _parts.split(",")[0];
 		if(partDet && partDet.length > 0){
 			$.ajax({
-				url : 'http://localhost:3000/updatePartDetails', //'https://vehicle-tracking.mybluemix.net/updatePartDetails',
+				url : 'http://win10marble1409.cloudapp.net:6001/updatePartDetails', //'https://vehicle-tracking.mybluemix.net/updatePartDetails',
 				type : 'POST',
 				data: {
 					partId: partDet.split('^')[0], 
@@ -1164,7 +1164,7 @@ function connect_to_server(){
 				////ws.send(JSON.stringify({type: "getAllPartsForUpdateVehicle", v: 2}));
 
 				// $.ajax({
-				// 	url : 'http://localhost:3000/getallparts', 
+				// 	url : 'http://win10marble1409.cloudapp.net:6001/getallparts', 
 				// 	//url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', //'https://vehicle-tracking.mybluemix.net/getAllParts',
 				// 	type : 'GET',
 				// 	dataType:'json',
