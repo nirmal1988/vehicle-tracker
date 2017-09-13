@@ -889,7 +889,7 @@ button:disabled:hover {
     margin: 0
 }
 #batchDetailsTable td {
-    padding: 10px 5px;
+    padding: 5px 5px 5px 100px;
     font-size: 12px;
     color: #757E7E;
     text-align: center

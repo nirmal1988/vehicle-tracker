@@ -130,6 +130,9 @@ type Dealer struct {
 type Part struct {
 	PartId 			string 	`json:"partId"`
 	ProductCode 		string  `json:"productCode"`
+	PartCode 		string  `json:"partCode"`
+	PartType 		string  `json:"partType"`
+	PartName 		string  `json:"partName"`
 	Transactions		[]Transaction `json:"transactions"`
 }
 

@@ -9,10 +9,23 @@
 /* global bag */
 /* global $ */
 var ws = {};
-var user = {username: bag.session.username};
+var user = {username: bag.session.username, displayname: bag.session.displayname};
 var valid_users = ["SKF", "BOSCH", "STAHLGRUBER", "MMW"];
-var valid_customers = ["CHRIS_VARGAS", "WILLIAM_LOVELL", "GILBERT_SMITH", "CHRISTINE_DUNNETT", "YUKIO_MIFUNE"];
-////var valid_customers = ["CUST1", "CUST2", "CUST3", "CUST4", "CUST5", "CUST6", "CUST7", "CUST8", "CUST9", "CUST10"];
+
+var valid_customers = bag.session.allUsers.filter(function(_o){
+	return _o.role == "CUSTOMER";
+});
+var valid_dealers = bag.session.allUsers.filter(function(_o){
+	return _o.role == "DEALER";
+});
+
+// var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS","password":"passw0rd","role":"CUSTOMER"},
+// {"username":"WILLIAM_LOVELL","displayname":"WILLIAM LOVELL","password":"passw0rd","role":"CUSTOMER"},
+// {"username":"GILBERT_SMITH","displayname":"GILBERT SMITH","password":"passw0rd","role":"CUSTOMER"},
+// {"username":"CHRISTINE_DUNNETT","displayname":"CHRISTINE DUNNETT","password":"passw0rd","role":"CUSTOMER"},
+// {"username":"YUKIO_MIFUNE","displayname":"YUKIO MIFUNE","password":"passw0rd","role":"CUSTOMER"}];
+//var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS"}, {"username":"WILLIAM_LOVELL", "GILBERT_SMITH", "CHRISTINE_DUNNETT", "YUKIO_MIFUNE"];
+//console.log(bag.session);
 var allChassisNumbers = [];
 var panels = [
 	{
@@ -52,6 +65,140 @@ var allSeatingCapacity = {
 	'BMW X5': ['7 seater', '5 seater'],
 	'BMW X6': ['5 seater']
 }
+
+var partTypes = [
+	"Air Intake Parts",
+	"Body Exterior Parts",
+	"Body Interior Parts",
+	"Brake Parts",
+	"Climate Control Parts",
+	"Clutch Parts",
+	"Cooling System Parts",
+	"Drive Belts Parts",
+	"Driveshaft and Axle Parts",
+	"Engine Electrical Parts",
+	"Engine Mechanical Parts",
+	"Exhaust Parts",
+	"Fuel System Parts",
+	"Steering Parts",
+	"Suspension Parts",
+	"Transmission Parts",
+	"Performance Parts Parts",
+	"Manuals and Accessories Parts",
+	"Chemicals and Fluids Parts",
+	"Tools and Hardware Parts",
+	"Maintenance Parts"
+];
+
+var partNames = {
+	"Air Intake Parts": [
+		"BMW Secondary Air Pump Kit (540i)",
+		"BMW Turbocharger Installation Kit",
+		"BMW Mass Air Flow Sensor - Bosch"
+	],
+	"Body Exterior Parts": [
+		"BMW Lug Bolt Kit (Set of 20)",
+		"BMW Black Chrome Fender Grille Set",
+		"BMW Tail Light Repair Kit"
+	],
+	"Body Interior Parts": [
+		"BMW Ambient Temperature Sensor Repair Kit",
+		"BMW Carbon Fiber Interior Trim Kit",
+		"BMW Speed Sensor - Bosch"
+	],
+	"Brake Parts": [
+		"BMW Brake Kit - Brembo/Akebono",
+		"BMW Brake Kit - Zimmermann/Textar",
+		"BMW Brake Kit with Lines - Akebono/Brembo"
+	],
+	"Climate Control Parts": [
+		"BMW A/C Compressor - Denso",
+		"BMW Blower Motor Resistor (E38) - Rein",
+		"BMW Heater Hose (E30) - OEM Rein"
+	],
+	"Clutch Parts": [
+		"BMW Clutch Installation Kit",
+		"BMW Dual Mass Flywheel - LuK",
+		"BMW Bell Housing Bolt Set - OEM Rein"
+	],
+	"Cooling System Parts": [
+		"BMW Water Pump Replacement Kit",
+		"BMW E46 Cooling System Overhaul Kit",
+		"BMW Coolant Hose Kit (E38 750iL)"
+	],
+	"Drive Belts Parts": [
+		"BMW Accessory Drive Belt Kit",
+		"BMW A/C Drive Belt Kit",
+		"BMW Belt Tensioner (X5) - INA"
+	],
+	"Driveshaft and Axle Parts": [
+		"BMW Drive Shaft Flex Joint Kit",
+		"BMW Wheel Hub Assembly Front - FAG",
+		"BMW Wheel Bearing Rear - FAG"
+	],
+	"Engine Electrical Parts": [
+		"BMW Ignition Coil Kit (Set of 8) - Bosch",
+		"BMW Spark Plug Kit (Set of 10)",
+		"MW Ignition Coil Kit (Set of 6)"
+	],
+	"Engine Mechanical Parts": [
+		"BMW Cold Climate PCV Breather System Kit",
+		"BMW Standard PCV Breather System Kit",
+		"BMW M52TU/M54 Timing Chain Kit"
+	],
+	"Exhaust Parts": [
+		"BMW Exhaust Clamp (525i) - Rein",
+		"BMW Muffler Front - Eberspaecher",
+		"BMW Exhaust Muffler (Z3 E36) - Bosal"
+	],
+	"Fuel System Parts": [
+		"BMW Fuel Injector Kit (Set of 8) - Genuine BMW",
+		"BMW Idle Control Valve - Bosch",
+		"BMW Fuel Pump and Sender Assembly - VDO"
+	],
+	"Steering Parts": [
+		"BMW Power Steering Reservoir Kit",
+		"BMW Steering Center Link Kit (E39)",
+		"BMW Tie Rod Assembly Kit - Karlyn"
+	],
+	"Suspension Parts": [
+		"BMW 10-Piece Control Arm Kit (E90 E91 E92) - Lemforder",
+		"BMW Strut Assembly Kit - Sachs",
+		"BMW Shock Absorber Kit - 310053KT"
+	],
+	"Transmission Parts": [
+		"BMW Transfer Case Mount Kit (E83 E84) - Corteco",
+		"BMW Manual Trans Short Shift Kit (E30)",
+		"BMW Pinion Shaft Seal Kit"
+	],
+	"Performance Parts Parts": [
+		"BMW FX100 Clutch Kit - Clutch Masters 03040-HD00-D",
+		"BMW Performance Intercooler (Black) - Mishimoto MMINT-E90-07B",
+		"BMW Dual Kompact BOV Kit - Turbosmart TS-0203-1050"
+	],
+	"Manuals and Accessories Parts": [
+		"Hella 3 LED Daytime Running Light Kit",
+		"Haynes Repair Manual ( '78-'85) - Haynes HAY-10215",
+		"BMW Haynes Repair Manual (320i) - Haynes HAY-18025"
+	],
+	"Chemicals and Fluids Parts": [
+		"Automotive Hand Soap (Kit of 10)",
+		"Sylvania Headlight Restoration Kit",
+		"Silicone Gasket Maker (Chemical Sealant) - Reinsozil-t"
+	],
+	"Tools and Hardware Parts": [
+		"Light Bulb (S40 V70 V40) - Osram",
+		"BMW Crush Washer - Reinz",
+		"BMW M60 M62 Timing Tool Kit - CTA",
+		"Power Fluid Extractor and Evacuator - CTA"
+	],
+	"Maintenance Parts": [
+		"BMW Ignition Service KitT",
+		"BMW Oil Change Kit - Genuine BMW/Mahle",
+		"BMW Tune-Up Kit with Oil (740i 740iL)"
+	]	
+};
+
 // =================================================================================
 // On Load
 // =================================================================================
@@ -61,7 +208,7 @@ $(document).on('ready', function() {
 	connect_to_server();
 	if(user.username)
 	{
-		$("#userField").html(user.username+ ' ');
+		$("#userField").html(user.displayname+ ' ');
 	}
 
 	// Customize which panels show up for which user
@@ -180,7 +327,7 @@ $(document).on('ready', function() {
 		$("#allColors").empty();
 		for(var i in allColors){
 			$("#allColors").append('<option id="'+ allColors[i] +'">'+ allColors[i] +'</option>')
-		}
+		}	
 	});
 
 	$("#allModels").change(function(){
@@ -225,7 +372,11 @@ $(document).on('ready', function() {
 	$("#editVehicleDetails").click(function(){
 		$('#vehicleDetailsTable').show();
 		$('#batchDetailsTable').hide();
-
+		$("#allPartTypes").empty().append('<option id=""></option>')
+		for(var i in partTypes){
+			$("#allPartTypes").append('<option id="'+ partTypes[i] +'">'+ partTypes[i] +'</option>');
+		}
+		$("#allPartTypes").change();
 		// show/hide panels as per the role
 		if(bag.session.user_role.toUpperCase() === "MANUFACTURER"){
 			$("#allCustomers").attr("disabled","disabled");
@@ -234,7 +385,7 @@ $(document).on('ready', function() {
 			$("input[name='upWarrantyStartDate']").attr("disabled","disabled");
 			$("input[name='upWarrantyEndDate']").attr("disabled","disabled");
 			$("input[name='upDateofDelivery']").attr("disabled","disabled");
-			$("#upParts").hide();
+			//$("#upParts").hide();
 			$("#trUpdateVehicle").hide();
 			$("#createNewVehicle").show();
 			$("input[name='upVariant'],input[name='upEngine'],input[name='upGearBox'],input[name='upColor'],input[name='upLastServiceDate'],input[name='upServiceDue'],input[name='allCustomers'],input[name='upDealer'],input[name='upLicensePlateNumber'],input[name='upMake'],input[name='upVin'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyStartDate'],input[name='upWarrantyEndDate'],input[name='upDateofDelivery']")
@@ -243,7 +394,7 @@ $(document).on('ready', function() {
 			$("#trServiceDetails").hide();
 		}
 		else if(bag.session.user_role.toUpperCase() === "DEALER"){
-			$("#upParts").hide();
+			//$("#upParts").hide();
 			$("#divServiceDue").hide();
 			$("#createNewVehicle").hide();
 			$("#divWarrantyEndDate").hide();
@@ -273,7 +424,7 @@ $(document).on('ready', function() {
 			$("#trServiceDetails").hide();
 		}
 		else if(bag.session.user_role.toUpperCase() === "SERVICE_CENTER"){
-			$("#upParts").show();
+			//$("#upParts").show();
 			$("#divServiceDue").show();
 			$("#createNewVehicle").hide();
 			$("#allCustomers").attr("disabled","disabled");
@@ -345,25 +496,108 @@ $(document).on('ready', function() {
 	});
 
 	$("#btnAddPart").click(function(){
-		if($("input[name='upPartId']").val() != ""){
 
-			var partFount=false;
-
-			$("#upParts").find("input").each(function(){
-				if($(this).attr("id") === $("input[name='upPartId']").val()){
-					$(this).prop("checked",true);
-					partFount=true;
-				}
-			});
-
-			if(!partFount){
-				alert("Part #"+ $("input[name='upPartId']").val() +" is not a valid part, please enter valid Part Id.");
-				return false;
+		$( "#dialog-confirm" ).dialog({
+			resizable: false,
+			height: "auto",
+			width: 600,
+			dialogClass: 'fixed-dialog', 
+			modal: true,
+			buttons: {
+			  "Add Part": function() {
+				$("#upPartsAddedBySC").append("<div class='selected-parts-by-sc' data='"+ $("input[name='upPartId']").val() +"^"+ $("#hdnSelectedPartCode").val() +"^"+ $("#hdnSelectedPartType").val() +"^"+ $("#hdnSelectedPartName").val() +"' style='margin:3px;float:left;border: solid 1px #ccc;border-radius: 7px;padding: 4px;display: block;' id='"+ $("input[name='upPartId']").val()+"'>"+ $("input[name='upPartId']").val() +"-"+ $("#hdnSelectedPartName").val() +"<b class='close-part-remove' onclick='var xBtn=this;$(this).parent().remove();' style='color:red;margin-left:4px;font-weight:bold;border: solid 1px #ccc;height: 14px;display: inline-block;width: 11px;padding: 0px;padding-left: 2px;border-radius: 3px;font-size: 14px;cursor:pointer;'>X</b></div>");
+				$("input[name='upPartId']").val("");
+				$( this ).dialog( "close" );
+			  },
+			  Cancel: function() {
+				$( this ).dialog( "close" );
+			  }
 			}
+		  });
+		  $($(".ui-dialog-buttonset").find("button")[0]).hide();
+		  $("#popup-part-header").html("");
+		  $("#popup-part-details").html("");
 
-			$("#upPartsAddedBySC").append("<div style='margin:3px;float:left;border: solid 1px #ccc;border-radius: 7px;padding: 4px;display: block;' id='"+ $("input[name='upPartId']").val()+"'>"+ $("input[name='upPartId']").val()+"<b class='close-part-remove' onclick='var xBtn=this;$(\"#upParts\").find(\"input\").each(function(){if($(this).attr(\"id\") === $(xBtn).parent().attr(\"id\")){$(this).prop(\"checked\",false);}});$(this).parent().remove();' style='color:red;margin-left:4px;font-weight:bold;border: solid 1px #ccc;height: 14px;display: inline-block;width: 11px;padding: 0px;padding-left: 2px;border-radius: 3px;font-size: 14px;cursor:pointer;'>X</b></div>");
-			$("input[name='upPartId']").val("");
+		//validate if part id and part type are selected
+		if($("input[name='upPartId']").val() == ""){
+			$("#popup-part-details").html("Please enter Part Id.");					
+			return false;
 		}
+		else if($("#allPartTypes").val() == ""){
+			$("#popup-part-details").html("Please select Part Type.");					
+			return false;
+		}
+		
+		//validation for already selected part
+		var _partFound = false;
+		$(".selected-parts-by-sc").each(function(obj){
+			if($(this).attr("data").indexOf($("input[name='upPartId']").val()) > -1){
+				_partFound = true;				
+			}
+		});
+		
+		if(_partFound){
+			$("#popup-part-details").html("You have already selected this part '"+ $("input[name='upPartId']").val() +"' to add.");					
+			return false;
+		}
+		  $.ajax({
+			url : 'http://localhost:3000/getPart/'+ $("input[name='upPartId']").val(), //'https://vehicle-tracking.mybluemix.net/getAllParts',
+			type : 'GET',				
+			dataType:'json',
+			success : function(data) {              										
+				if(data){
+					//validate if this part is installed in another machine.
+					var tx = data.transactions;
+					if(data.partType != $("#allPartTypes").val()){
+						$("#popup-part-details").html("The selected part '"+ $("input[name='upPartId']").val() +"' does not belong to \""+ $("#allPartTypes").val() +"\", but it belongs to \""+ data.partType +"\".");					
+						return false;
+					}
+					for(var vi=0;vi<tx.length;vi++){
+						if(tx[vi].ttype == "PART_INSTALLED" && tx[vi].vin != "" && tx[vi].vin != $("input[name='upVin']").val()){
+							$("#popup-part-details").html("The selected part '"+ $("input[name='upPartId']").val() +"' is already installed on another Vehicle, please use another Part.");					
+							return false;
+						}
+						else if(tx[vi].ttype == "PART_INSTALLED" && tx[vi].vin != "" && tx[vi].vin == $("input[name='upVin']").val()){
+							$("#popup-part-details").html("The selected part '"+ $("input[name='upPartId']").val() +"' is already installed on this Vehicle.");					
+							return false;
+						}
+					}
+
+					//show the part details
+					var _headerDetails = "<p><span>Part Id: </span>"+ data.partId +"("+ data.partName +")</p>";
+					//_headerDetails+= "<p><span>Part Code: </span>"+ data.partCode +"</p>";
+					//_headerDetails+= "<p><span>Part Type: </span>"+ data.partType +"</p>";
+					//_headerDetails+= "<p><span>Part Name: </span>"+ data.partName +"</p>";
+					//_headerDetails+= "<p><span>Description: </span>"+ data.description +"</p>";
+					$("#popup-part-header").html(_headerDetails);
+
+					var _txDetails = "";
+					_txDetails += "<p class='ui-dialog-title ui-popup-grid-header'>Transactions: </p>";
+					_txDetails += "<table class='part-transactions-popup'>";
+					for(var vi=0;vi<tx.length;vi++){
+						_txDetails += formatPartTransactions(tx[vi], {part: data});
+					}
+					_txDetails += "</table>";
+					_txDetails += "<input type='hidden' id='hdnSelectedPartCode' value='"+ data.partCode +"'>";
+					_txDetails += "<input type='hidden' id='hdnSelectedPartType' value='"+ data.partType +"'>";
+					_txDetails += "<input type='hidden' id='hdnSelectedPartName' value='"+ data.partName +"'>";
+					$("#popup-part-details").html(_txDetails);
+					$($(".ui-dialog-buttonset").find("button")[0]).show();
+				}
+				else{
+					$($(".ui-dialog-buttonset").find("button")[0]).hide();
+					$("#popup-part-details").html("The selected part '"+ $("input[name='upPartId']").val() +"' is not valid.");					
+				}
+			},
+			error : function(request,error)
+			{
+				$($(".ui-dialog-buttonset").find("button")[0]).hide();
+				$("#popup-part-details").html("<div style='font-size:20px;text-align:left;'>The selected part '"+$("input[name='upPartId']").val() +"' is not valid.</div>");
+			}
+		  });
+
+		  return;
+
 	});
 
 	$("#createVehicle").click(function(){
@@ -426,14 +660,14 @@ $(document).on('ready', function() {
 				tranType = "SERVICE_CENTER";
 			}
 			var _parts = "";
-			$(".part-un-selected").each(function(obj){
-				if(_parts == ""){
-					if($(this).is(':checked'))
-						_parts = $(this).attr("id") +"-";
-				}
-				else{
-					if($(this).is(':checked'))
-						_parts += ","+ $(this).attr("id") +"-";
+			$(".selected-parts-by-sc").each(function(obj){
+				if($(this).attr("data") != ""){
+					if(_parts == ""){
+						_parts = $(this).attr("data");
+					}
+					else{
+						_parts += ","+ $(this).attr("data");
+					}
 				}
 			});
 			
@@ -476,9 +710,6 @@ $(document).on('ready', function() {
 					$("input[name='WarrantyEndDate']").val('');
 					$("#upServiceDone").attr("checked", false);
 					$("#upServiceDesc").val('')
-					$(".part-un-selected").each(function(obj){
-						$(this).attr("checked", false);
-					});
 					$("#upPartsAddedBySC").html("");
 					console.log("update request sent");
 			}
@@ -662,16 +893,15 @@ $(document).on('ready', function() {
 });
 
 //rest call to part to update the vin if part is added
-function updatePartVin(_parts){
-	_parts = _parts.replace(/-/g, '');
+function updatePartVin(_parts){	
 	if(_parts && _parts.length > 0){
-		var partId = _parts.split(",")[0];
-		if(partId && partId.length > 0){
+		var partDet = _parts.split(",")[0];
+		if(partDet && partDet.length > 0){
 			$.ajax({
 				url : 'http://localhost:3000/updatePartDetails', //'https://vehicle-tracking.mybluemix.net/updatePartDetails',
 				type : 'POST',
 				data: {
-					partId: partId, 
+					partId: partDet.split('^')[0], 
 					vin: $("input[name='upVin']").val(), 
 					tranType: "PART_INSTALLED",
 					vehicleId:"",dateOfDelivery:"",dateOfInstallation: moment().format("YYYY-MM-DD"),
@@ -683,12 +913,12 @@ function updatePartVin(_parts){
 				success : function(data) {              										
 					if(data){
 						if(_parts.indexOf(",") > -1){
-							_parts = _parts.replace(partId+",","");
+							_parts = _parts.replace(partDet+",","");
 						}
 						else{
-							_parts = _parts.replace(partId,"");
+							_parts = _parts.replace(partDet,"");
 						}
-						if(_parts.length > 1){
+						if(_parts.length > 10){
 							updatePartVin(_parts);
 						}
 					}
@@ -755,7 +985,7 @@ function connect_to_server(){
 				},
 				error : function(request,error)
 				{
-					alert("Request: "+JSON.stringify(request));
+					//alert("Request: "+JSON.stringify(request));
 				}
 			});
 		}
@@ -810,13 +1040,32 @@ function connect_to_server(){
 				$("input[name='upMake']").val(data.vehicle.make);
 				//$("input[name='upChassisNumber']").val(data.vehicle.chassisNumber);
 				$("input[name='upVin']").val(data.vehicle.vin);
-				$("input[name='upVehicleOwner']").val(data.vehicle.owner.name);
+
+				if(data.vehicle.owner.name !=""){
+					var _ownerDisplayName = valid_customers.filter(function(_o){
+						return _o.username == data.vehicle.owner.name;
+					});
+					$("input[name='upVehicleOwner']").val(_ownerDisplayName[0].displayname);
+				}
+				else{
+					$("input[name='upVehicleOwner']").val(data.vehicle.owner.name);
+				}
+				
 				$("input[name='upLicensePlateNumber']").val(data.vehicle.licensePlateNumber);
 				$("input[name='upWarrantyStartDate']").val(moment(data.vehicle.warrantyStartDate).format("YYYY-MM-DD"));
 				$("input[name='upWarrantyEndDate']").val(moment(data.vehicle.warrantyEndDate).format("YYYY-MM-DD"));
 				$("input[name='upDateOfManufacture']").val(moment(data.vehicle.dateOfManufacture).format("YYYY-MM-DD"));
 				$("input[name='upDateofDelivery']").val(data.vehicle.dateofDelivery);
-				$("input[name='upDealer']").val(data.vehicle.dealer.name);
+				
+				if(data.vehicle.dealer.name !=""){
+				var _dealerDisplayName =  bag.session.allUsers.filter(function(_o){
+					return _o.username == data.vehicle.dealer.name;
+				});
+				$("input[name='upDealer']").val(_dealerDisplayName[0].displayname);
+				}
+				else{
+					$("input[name='upDealer']").val(data.vehicle.dealer.name);
+				}
 
 				$("#upVariant").html(data.vehicle.variant);
 				$("#upEngine").html(data.vehicle.engine);
@@ -827,7 +1076,7 @@ function connect_to_server(){
 				// list parts
 				var str = "";
                 for(var i in data.vehicle.parts){
-                    str += "<span style='float:left; margin-left:3px; width: 80px; border:0 0 0 0;'>"+ data.vehicle.parts[i].partId +"</span>"
+                    str += "<div style='padding-top: 2px;'>"+ data.vehicle.parts[i].partId +"-"+ data.vehicle.parts[i].partName +"</div>"
                 }
                 $("#upParts").html(str); 
 				
@@ -853,7 +1102,7 @@ function connect_to_server(){
 							}
 						}
 						servHtml += '<tr>';
-						servHtml += '<td style="text-align:left;padding-left:20px">';
+						servHtml += '<td style="text-align:left;">';
 						servHtml +=	'<div style="display: inline-block; vertical-align: middle;">';
 						servHtml += '<p style="font-weight:500;">Service done by <span style="color:#5596E6">' + serv[i].serviceDoneBy +'</span>';
 						servHtml += 'on ' + moment(new Date(serv[i].serviceDoneOn)).format('lll') +'</p>';
@@ -887,14 +1136,14 @@ function connect_to_server(){
 
 			}
 			else if(data.msg === 'allPartsForUpdateVehicle'){
-				console.log("---- allParts ---- ", data);
-				build_Parts(data.parts, null);
-				var str="<b style='font-weight:bold;text-decoration:underline;'>Add new Parts:</b></br>";
-				for(var i in data.parts){
-					str += "<span style='float:left; width: 80px;'><input type='checkbox' id='"+ data.parts[i] +"' class='part-un-selected' />"+ data.parts[i] +"</span>"
-				}
-				$("#upParts").html(str);
-				console.log(str);
+				// console.log("---- allParts ---- ", data);
+				// build_Parts(data.parts, null);
+				// var str="<b style='font-weight:bold;text-decoration:underline;'>Add new Parts:</b></br>";
+				// for(var i in data.parts){
+				// 	str += "<span style='float:left; width: 80px;'><input type='checkbox' id='"+ data.parts[i] +"' class='part-un-selected' />"+ data.parts[i] +"</span>"
+				// }
+				// $("#upParts").html(str);
+				// console.log(str);
 			}
 			else if(data.msg === 'vehicle'){
 
@@ -914,23 +1163,23 @@ function connect_to_server(){
 				console.log("Trnsaction "+i+" "+txs[i]);
 				////ws.send(JSON.stringify({type: "getAllPartsForUpdateVehicle", v: 2}));
 
-				$.ajax({
-					url : 'http://localhost:3000/getallparts', 
-					//url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', //'https://vehicle-tracking.mybluemix.net/getAllParts',
-					type : 'GET',
-					dataType:'json',
-					success : function(data) {              										
-						var str="<b style='font-weight:bold;text-decoration:underline;'>Add new Parts:</b></br>";
-						for(var i in data.parts){
-							str += "<span style='float:left; width: 80px;'><input type='checkbox' id='"+ data.parts[i] +"' class='part-un-selected' />"+ data.parts[i] +"</span>"
-						}
-						$("#upParts").html(str);
-					},
-					error : function(request,error)
-					{
-						alert("Request: "+JSON.stringify(request));
-					}
-				});
+				// $.ajax({
+				// 	url : 'http://localhost:3000/getallparts', 
+				// 	//url : 'http://win10dv35865.cloudapp.net:3000/getAllParts', //'https://vehicle-tracking.mybluemix.net/getAllParts',
+				// 	type : 'GET',
+				// 	dataType:'json',
+				// 	success : function(data) {              										
+				// 		var str="<b style='font-weight:bold;text-decoration:underline;'>Add new Parts:</b></br>";
+				// 		for(var i in data.parts){
+				// 			str += "<span style='float:left; width: 80px;'><input type='checkbox' id='"+ data.parts[i] +"' class='part-un-selected' />"+ data.parts[i] +"</span>"
+				// 		}
+				// 		$("#upParts").html(str);
+				// 	},
+				// 	error : function(request,error)
+				// 	{
+				// 		alert("Request: "+JSON.stringify(request));
+				// 	}
+				// });
 
 				$("#bDetHeader").html("Vin Number #" + data.vehicle.chassisNumber +"");
 				selectedParts = data.vehicle.parts;
@@ -946,8 +1195,15 @@ function connect_to_server(){
 				$("input[name='upWarrantyEndDate']").val(moment(data.vehicle.warrantyEndDate).format("YYYY-MM-DD"));
 				$("input[name='upDateOfManufacture']").val(moment(data.vehicle.dateOfManufacture).format("YYYY-MM-DD"));
 				$("input[name='upDateofDelivery']").val(data.vehicle.dateofDelivery);
-				$("input[name='upDealer']").val(data.vehicle.dealer.name);
-				
+				if(data.vehicle.dealer.name != ""){
+				var _dealerDisplayName =  bag.session.allUsers.filter(function(_o){
+					return _o.username == data.vehicle.dealer.name;
+				});
+				$("input[name='upDealer']").val(_dealerDisplayName[0].displayname);				
+				}
+				else{
+					$("input[name='upDealer']").val(data.vehicle.dealer.name);				
+				}
 				$("#upVariant").html(data.vehicle.variant);
 				$("#upEngine").html(data.vehicle.engine);
 				$("#upGearBox").html(data.vehicle.gearBox);
@@ -960,12 +1216,17 @@ function connect_to_server(){
 				$("#allCustomers").empty().append('<option id=""></option>')
 				for(var i in valid_customers){
 					var _selected = "";
-					if(data.vehicle.owner.name == valid_customers[i])
+					if(data.vehicle.owner.name == valid_customers[i].username)
 						_selected = "selected";
-					$("#allCustomers").append('<option '+ _selected +' id="'+ valid_customers[i] +'">'+ valid_customers[i] +'</option>')
+					$("#allCustomers").append('<option '+ _selected +' id="'+ valid_customers[i].username +'" value="'+ valid_customers[i].username +'">'+ valid_customers[i].displayname +'</option>')
 				}
 				//$('#allCustomers option[value="'+ data.vehicle.owner.name +'"]').attr('selected','selected');
 				// list parts
+				var str = "";
+                for(var i in data.vehicle.parts){
+                    str += "<div style='padding-top: 2px;'>"+ data.vehicle.parts[i].partId +"-"+ data.vehicle.parts[i].partName +"</div>"
+                }
+                $("#upParts").html(str); 
 				
 				$("#selectedParts").empty();
 				$("#selectedParts").append('<option id="0">Added Parts</option>');
@@ -993,7 +1254,7 @@ function connect_to_server(){
 							}
 						}
 						servHtml += '<tr>';
-						servHtml += '<td style="text-align:left;padding-left:20px">';
+						servHtml += '<td style="text-align:left;">';
 						servHtml +=	'<div style="display: inline-block; vertical-align: middle;">';
 						servHtml += '<p style="font-weight:500;">Service done by <span style="color:#5596E6">' + serv[i].serviceDoneBy +'</span>';
 						servHtml += 'on ' + moment(new Date(serv[i].serviceDoneOn)).format('lll') +'</p>';
@@ -1028,7 +1289,7 @@ function connect_to_server(){
 					if(txs[i].ttype == "CREATE"){
 			          //litem = {avatar:"ion-ios-box-outline", date: tx.vDate, location: tx.location, desc:"ADDED BY ", owner:tx.owner};
 				        html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
+						html += '<td style="text-align:left;">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">ADDED BY <span style="color:#5596E6">' + txs[i].updatedBy +'</span></p>';
 						html += '<p style="">on ' + moment(new Date(txs[i].updatedOn)).format('lll') +'</p>';
@@ -1045,7 +1306,7 @@ function connect_to_server(){
 							}
 						});
 			        	html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
+						html += '<td style="text-align:left;">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">Added/Updated '+ updateStr +'&nbsp;By <span style="color:#5596E6">' + txs[i].updatedBy +'</span></p>';
 						html += '<p style="margin-left:4px;">on ' + moment(new Date(txs[i].updatedOn)).format('lll') +'</p>';
@@ -1070,7 +1331,7 @@ function connect_to_server(){
 							}
 						});
 			        	html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
+						html += '<td style="text-align:left;">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">SERVICE DONE BY <span style="color:#5596E6">' + txs[i].updatedBy +'</span></p>';
 						html += '<p style="">' + updateStr +'</p>';
@@ -1082,7 +1343,7 @@ function connect_to_server(){
 			        else if(txs[i].ttype == "DELIVERY"){
 			          //litem = {avatar:"ion-ios-barcode-outline", date: data.batch.vDate, location: data.batch.location, desc:"PICKED UP BY ", owner:data.batch.owner};
 			        	html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
+						html += '<td style="text-align:left;">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">DELIVERED TO <span style="color:#5596E6">' + txs[i].user +'</span></p>';
 						html += '<p style="">on ' + txs[i].dateOfDelivery +'</p>';
@@ -1093,7 +1354,7 @@ function connect_to_server(){
 			        else if(txs[i].ttype == "INSTALLED"){
 			          //litem = {avatar:"ion-ios-shuffle", date: data.batch.vDate, location: data.batch.location, desc:"DELIVERED TO ", owner:data.batch.owner};
 			        	html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
+						html += '<td style="text-align:left;">';
 						html +=	'<div style="display: inline-block; vertical-align: middle;">';
 						html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
 						html += '<p style="">on ' + txs[i].dateOfInstallation +'</p>';
@@ -1116,57 +1377,7 @@ function connect_to_server(){
 				for(var i=0; i<txs.length; i++){
 					console.log("Trnsaction "+i+" "+txs[i]);
 					$("#bDetHeader").html("<p>PART Id: " + data.part.partId + "(" + data.part.partName + ")</p>");
-					if(txs[i].ttype == "CREATE"){
-						html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
-						html +=	'<div style="display: inline-block; vertical-align: middle;">';
-						html += '<p style="font-weight:500;">ADDED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
-						html += '<p style="">on ' + txs[i].dateOfManufacture +'</p>';
-						html += '<p style="">Part Code: ' + data.part.partCode +'</p>';
-						html += '<p style="">Part Type: ' + data.part.partType +'</p>';
-						html += '<p style="">Part Name: ' + data.part.partName +'</p>';
-						html += '<p style="">Description: ' + data.part.description +'</p>';
-						
-						html +=	'</div>';
-						html += '</td>';
-						html += '</tr>';
-			        }
-			        else if(txs[i].ttype == "DELIVERY"){
-			          //litem = {avatar:"ion-ios-barcode-outline", date: data.batch.vDate, location: data.batch.location, desc:"PICKED UP BY ", owner:data.batch.owner};
-			        	html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
-						html +=	'<div style="display: inline-block; vertical-align: middle;">';
-						html += '<p style="font-weight:500;">DELIVERED TO <span style="color:#5596E6">' + txs[i].user +'</span></p>';
-						html += '<p style="">on ' + txs[i].dateOfDelivery +'</p>';
-						html +=	'</div>';
-						html += '</td>';
-						html += '</tr>';
-			        }
-			        else if(txs[i].ttype == "INSTALLED"){
-			          //litem = {avatar:"ion-ios-shuffle", date: data.batch.vDate, location: data.batch.location, desc:"DELIVERED TO ", owner:data.batch.owner};
-			        	html += '<tr>';
-						html += '<td style="text-align:left;padding-left:20px">';
-						html +=	'<div style="display: inline-block; vertical-align: middle;">';
-						html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
-						html += '<p style="">on ' + txs[i].dateOfInstallation +'</p>';
-						html += '<p style="">Vehicle ID: ' + txs[i].vehicleId +'</p>';
-						html += '<p style="">Warranty Start Date:' + txs[i].warrantyStartDate +'</p>';
-						html += '<p style="">Warranty End Date:' + txs[i].warrantyEndDate +'</p>';
-						html +=	'</div>';
-						html += '</td>';
-						html += '</tr>';
-					}
-					else if(txs[i].ttype == "PART_INSTALLED"){
-						  html += '<tr>';
-						  html += '<td style="text-align:left;padding-left:20px">';
-						  html +=	'<div style="display: inline-block; vertical-align: middle;">';
-						  html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + txs[i].user +'</span></p>';
-						  html += '<p style="">on ' + txs[i].dateOfInstallation +'</p>';
-						  html += '<p style="">Vehicle Vin: ' + txs[i].vin +'</p>';
-						  html +=	'</div>';
-						  html += '</td>';
-						  html += '</tr>';
-					  }
+					html += formatPartTransactions(txs[i], data);
 				}
 
 				$("#batchDetailsBody").html(html);
@@ -1271,7 +1482,61 @@ function connect_to_server(){
 		ws.send(message);
 	}
 
-
+function formatPartTransactions(tx, data){
+	var html="";
+	if(tx.ttype == "CREATE"){
+		html += '<tr>';
+		html += '<td style="text-align:left;">';
+		html +=	'<div style="display: inline-block; vertical-align: middle;">';
+		html += '<p style="font-weight:500;">ADDED BY <span style="color:#5596E6">' + tx.user +'</span></p>';
+		html += '<p style="">on ' + tx.dateOfManufacture +'</p>';
+		html += '<p style="">Part Code: ' + data.part.partCode +'</p>';
+		html += '<p style="">Part Type: ' + data.part.partType +'</p>';
+		html += '<p style="">Part Name: ' + data.part.partName +'</p>';
+		html += '<p style="">Description: ' + data.part.description +'</p>';
+		
+		html +=	'</div>';
+		html += '</td>';
+		html += '</tr>';
+	}
+	else if(tx.ttype == "DELIVERY"){
+	  //litem = {avatar:"ion-ios-barcode-outline", date: data.batch.vDate, location: data.batch.location, desc:"PICKED UP BY ", owner:data.batch.owner};
+		html += '<tr>';
+		html += '<td style="text-align:left;">';
+		html +=	'<div style="display: inline-block; vertical-align: middle;">';
+		html += '<p style="font-weight:500;">DELIVERED TO <span style="color:#5596E6">' + tx.user +'</span></p>';
+		html += '<p style="">on ' + tx.dateOfDelivery +'</p>';
+		html +=	'</div>';
+		html += '</td>';
+		html += '</tr>';
+	}
+	else if(tx.ttype == "INSTALLED"){
+	  //litem = {avatar:"ion-ios-shuffle", date: data.batch.vDate, location: data.batch.location, desc:"DELIVERED TO ", owner:data.batch.owner};
+		html += '<tr>';
+		html += '<td style="text-align:left;">';
+		html +=	'<div style="display: inline-block; vertical-align: middle;">';
+		html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + tx.user +'</span></p>';
+		html += '<p style="">on ' + tx.dateOfInstallation +'</p>';
+		html += '<p style="">Vehicle ID: ' + tx.vehicleId +'</p>';
+		html += '<p style="">Warranty Start Date:' + tx.warrantyStartDate +'</p>';
+		html += '<p style="">Warranty End Date:' + tx.warrantyEndDate +'</p>';
+		html +=	'</div>';
+		html += '</td>';
+		html += '</tr>';
+	}
+	else if(tx.ttype == "PART_INSTALLED"){
+		  html += '<tr>';
+		  html += '<td style="text-align:left;">';
+		  html +=	'<div style="display: inline-block; vertical-align: middle;">';
+		  html += '<p style="font-weight:500;">PART INSTALLED BY <span style="color:#5596E6">' + tx.user +'</span></p>';
+		  html += '<p style="">on ' + tx.dateOfInstallation +'</p>';
+		  html += '<p style="">Vehicle Vin: ' + tx.vin +'</p>';
+		  html +=	'</div>';
+		  html += '</td>';
+		  html += '</tr>';
+	}
+	return html;
+}
 
 // =================================================================================
 //	UI Building

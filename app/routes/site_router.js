@@ -111,7 +111,7 @@ router.route("/:page").post(function(req, res){
 				console.log("user has logged in", req.body.username);
 				req.session.username = req.body.username;
 				req.session.error_msg = null;
-
+				req.session.allUsers = creds;
 				// Roles are used to control access to various UI elements
 				if(creds[i].role) {
 					console.log("user has specific role:", creds[i].role);
@@ -119,6 +119,12 @@ router.route("/:page").post(function(req, res){
 				} else {
 					console.log("user role not specified, assuming:", "user");
 					req.session.user_role = "user";
+				}
+
+				if(creds[i].displayname) {
+					req.session.displayname = creds[i].displayname;
+				} else {
+					req.session.displayname = "user";
 				}
 				
 				if(req.session.user_role == "CUSTOMER"){
