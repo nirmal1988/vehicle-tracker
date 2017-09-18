@@ -10,7 +10,6 @@
 /* global $ */
 var ws = {};
 var user = {username: bag.session.username, displayname: bag.session.displayname, user_role: bag.session.user_role};
-var valid_users = ["SKF", "BOSCH", "STAHLGRUBER", "MMW"];
 
 var valid_customers = bag.session.allUsers.filter(function(_o){
 	return _o.role == "CUSTOMER";
@@ -18,7 +17,7 @@ var valid_customers = bag.session.allUsers.filter(function(_o){
 var valid_dealers = bag.session.allUsers.filter(function(_o){
 	return _o.role == "DEALER";
 });
-var partsBlockChainUrl = "http://win10marble1409.cloudapp.net:6001";
+var partsBlockChainUrl = "http://localhost:3000";// "http://win10marble1409.cloudapp.net:6001";
 // var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS","password":"passw0rd","role":"CUSTOMER"},
 // {"username":"WILLIAM_LOVELL","displayname":"WILLIAM LOVELL","password":"passw0rd","role":"CUSTOMER"},
 // {"username":"GILBERT_SMITH","displayname":"GILBERT SMITH","password":"passw0rd","role":"CUSTOMER"},
@@ -1084,7 +1083,7 @@ function connect_to_server(){
 				// list parts
 				var str = "";
                 for(var i in data.vehicle.parts){
-                    str += "<div style='padding-top: 4px;'><a style='color:blue;cursor:pointer;text-decoration:underline;' onclick=\"openPartDetailsPopup("+ data.vehicle.parts[i].partId +")\">"+ data.vehicle.parts[i].partId +"</a> - "+ data.vehicle.parts[i].partName +"</div>"
+                    str += "<div style='padding-top: 4px;'><a style='color:blue;cursor:pointer;text-decoration:underline;' onclick=\"openPartDetailsPopup('"+ data.vehicle.parts[i].partId +"')\">"+ data.vehicle.parts[i].partId +"</a> - "+ data.vehicle.parts[i].partName +"</div>"
                 }
                 $("#upParts").html(str); 
 				
@@ -1213,7 +1212,7 @@ function connect_to_server(){
 				// list parts
 				var str = "";
                 for(var i in data.vehicle.parts){
-                    str += "<div style='padding-top: 4px;'><a style='color:blue;cursor:pointer;text-decoration:underline;' onclick=\"openPartDetailsPopup("+ data.vehicle.parts[i].partId +")\">"+ data.vehicle.parts[i].partId +"</a> - "+ data.vehicle.parts[i].partName +"</div>"
+                    str += "<div style='padding-top: 4px;'><a style='color:blue;cursor:pointer;text-decoration:underline;' onclick=\"openPartDetailsPopup('"+ data.vehicle.parts[i].partId +"')\">"+ data.vehicle.parts[i].partId +"</a> - "+ data.vehicle.parts[i].partName +"</div>"
                 }
                 $("#upParts").html(str); 
 				
@@ -1536,7 +1535,8 @@ function formatPartTransactions(tx, data){
 		html += '<p style="font-weight:500;">ADDED BY <span style="color:#5596E6">' + tx.user +'</span></p>';
 		html += '<p style="">on ' + tx.dateOfManufacture +'</p>';
 		html += '<p style="">Part Code: ' + data.part.partCode +'</p>';
-		html += '<p style="">Part Type: ' + data.part.partType +'</p>';
+		html += '<p style="">Batch Code: ' + data.part.batchCode +'</p>';
+		html += '<p style="">Part Type: ' + data.part.partType +'</p>';		
 		html += '<p style="">Part Name: ' + data.part.partName +'</p>';
 		html += '<p style="">Description: ' + data.part.description +'</p>';
 		
