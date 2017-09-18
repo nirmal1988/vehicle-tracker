@@ -33,36 +33,36 @@ var creds	= require("../user_creds.json");
 // ============================================================================================================================
 router.route("/").get(function(req, res){
 	check_login(res, req);
-	res.render("vehicle", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("vehicle", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 
 router.route("/home").get(function(req, res){
 	check_login(res, req);
-	res.render("vehicle", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("vehicle", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 router.route("/part").get(function(req, res){
 	check_login(res, req);
-	res.render("part2", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("part2", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 router.route("/updatePart").get(function(req, res){
 	check_login(res, req);
-	res.render("part2", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("part2", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 router.route("/dashboard").get(function(req, res){
 	check_login(res, req);
-	res.render("vehicle", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("vehicle", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 router.route("/vehicle").get(function(req, res){
 	check_login(res, req);
-	res.render("vehicle", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("vehicle", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 router.route("/customerVehicle").get(function(req, res){
 	check_login(res, req);
-	res.render("customerVehicle", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("customerVehicle", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 router.route("/validatePart").get(function(req, res){
 	check_login(res, req);
-	res.render("validatePart", {title: "Vehicle Manager", bag: {setup: setup, e: process.error, session: req.session}} );
+	res.render("validatePart", {title: "Vehicle Manager | "+ req.session.user_role , bag: {setup: setup, e: process.error, session: req.session}} );
 });
 
 
@@ -104,14 +104,19 @@ router.route("/logout").get(function(req, res){
 
 router.route("/:page").post(function(req, res){
 	req.session.error_msg = "Invalid username or password";
-	
+	var allUsers = [];
+	for(var i in creds){		
+		allUsers.push(JSON.parse(JSON.stringify(creds[i])));
+		allUsers[i].password = "";
+	}
+
 	for(var i in creds){
 		if(creds[i].username == req.body.username){
 			if(creds[i].password == req.body.password){
 				console.log("user has logged in", req.body.username);
 				req.session.username = req.body.username;
 				req.session.error_msg = null;
-				req.session.allUsers = creds;
+				req.session.allUsers = allUsers;
 				// Roles are used to control access to various UI elements
 				if(creds[i].role) {
 					console.log("user has specific role:", creds[i].role);
