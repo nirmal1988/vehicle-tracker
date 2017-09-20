@@ -459,9 +459,9 @@ func getAllVehicles(stub shim.ChaincodeStubInterface, user string) pb.Response {
 		if user != "" {
 			// return only customer vehicles
 			if sb.Owner.Name == user {
-				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber);
+				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber +"-"+ sb.LicensePlateNumber);
 			} else if sb.Dealer.Name == user {
-				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber);
+				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber +"-"+ sb.LicensePlateNumber);
 			}
 		} else if user == "" {
 			// return all vehicles for mfr, dealer, service center user
