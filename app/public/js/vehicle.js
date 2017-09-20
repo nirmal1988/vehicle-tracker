@@ -411,8 +411,17 @@ $(document).on('ready', function() {
 				$("#allCustomers").css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
 			}
 			else{
+				$("#trUpdateVehicle").show();
+				$("#divWarrantyEndDate").hide();
+				$("#allCustomers").attr("disabled",false);
+				
+				$("input[name='upLicensePlateNumber']").attr("disabled",false);
+				$("input[name='upWarrantyStartDate']").attr("disabled",false);				
+				$("input[name='upDateofDelivery']").attr("disabled",false);
+
 				$("input[name='upLicensePlateNumber'],input[name='upWarrantyStartDate'],input[name='upDateofDelivery'],input[name='upWarrantyEndDate']")
 				.css({'border': '1px solid #ccc','border-radius': '7px'});
+				$("#allCustomers").css({'border': '1px solid #D4DCDC','border-radius': '7px'});
 			}
 			$("input[name='upLastServiceDate'],input[name='upServiceDue'],input[name='upDealer'],input[name='upMake'],input[name='upVin'],input[name='upDateOfManufacture'],input[name='upWarrantyEndDate']")
 				.css({'border': '0px','border-bottom': '0px solid #ccc','border-radius': '0px'});
@@ -1028,7 +1037,10 @@ function connect_to_server(){
 			else if(data.msg === 'customerVehicle'){
 				console.log("-----onMessage customerVehicle----", data);
 				//build_Vehicles(data.vehicles, null);
-				
+				$("#allVINs").empty();
+				for(var i in data.vehicles){
+					$("#allVINs").append('<option value="'+ data.vehicles[i].split("-")[0] +'" id="'+ data.vehicles[i] +'">'+  data.vehicles[i].split("-")[1] +" - "+ data.vehicles[i].split("-")[2] +'</option>')
+				}
 				console.log("First data from Vehicle List:  ", data.vehicles[0]);
 				firstVehicleId = data.vehicles[0].split("-")[0];
 				
@@ -1036,10 +1048,13 @@ function connect_to_server(){
 
 				$('#spinner2').hide();
 				$('#openTrades').show();	
+				$("#allVINs").change(function(o){
+					ws.send(JSON.stringify({type: "getCustomerVehicleDetails", vehicleId: $(this).val()}));
+				});
 			}	
 			
 			else if(data.msg === 'customerVehicleDetails'){
-				console.log('----- onMessage customerVehicleDetails:', data.vehicle);
+				console.log('----- onMessage customerVehicleDetails:', data.vehicle);			
 
 				$("#customerVehicleDetailsTable").show();
 				$("input[name='upVehicleId']").val(data.vehicle.vehicleId);
