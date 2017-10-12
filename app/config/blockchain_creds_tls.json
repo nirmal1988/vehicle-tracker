@@ -23,7 +23,7 @@
 				}
 			},
 			"chaincodes": {
-				"marbles": "v4"
+				"cc": "v4"
 			},
 			"x-blockDelay": 1000
 		}

@@ -21,7 +21,7 @@
 				}
 			},
 			"chaincodes": {
-				"marbles": "v1.0"
+				"cc": "v1.0"
 			},
 			"x-blockDelay": 10000
 		}
