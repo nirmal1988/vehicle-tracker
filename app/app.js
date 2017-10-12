@@ -41,7 +41,7 @@ var helper = require(__dirname + '/utils/helper.js')("app_local.json", logger);	
 //var helper = require(__dirname + '/utils/helper.js')(process.env.creds_filename, logger);				//parses our blockchain config file
 
 var fcw = require('./utils/fc_wrangler/index.js')({ block_delay: helper.getBlockDelay() }, logger);		//fabric client wrangler wraps the SDK
-var ws_server = require('./utils/websocket_server_side.js')({ block_delay: helper.getBlockDelay() }, fcw, logger);	//websocket logic
+//var ws_server = require('./utils/websocket_server_side.js')({ block_delay: helper.getBlockDelay() }, fcw, logger);	//websocket logic
 
 var enrollObj = null;
 var app_lib = null;
@@ -197,14 +197,14 @@ function startup_unsuccessful() {
 
 // Find if app has started up successfully before
 function detect_prev_startup(opts, cb) {
-	logger.info('Checking ledger for marble owners listed in the config file');
-	app_lib.read_everything(null, function (err, resp) {			//read the ledger for marble owners
+	logger.info('Checking ledger for app owners listed in the config file');
+	app_lib.read_everything(null, function (err, resp) {			//read the ledger for app owners
 		if (err != null) {
 			logger.warn('Error reading ledger');
 			if (cb) cb(true);
 		} else {
 			if (find_missing_owners(resp)) {							//check if each user in the settings file has been created in the ledger
-				logger.info('We need to make marble owners');			//there are marble owners that do not exist!
+				logger.info('We need to make app owners');			//there are app owners that do not exist!
 				broadcast_state('register_owners', 'waiting');
 				if (cb) cb(true);
 			} else {
@@ -221,7 +221,7 @@ function detect_prev_startup(opts, cb) {
 function setup_app_lib(cb) {
 	var opts = helper.makeMarblesLibOptions();
 	app_lib = require('./utils/app_cc_lib.js')(enrollObj, opts, fcw, logger);
-	ws_server.setup(wss.broadcast, app_lib);
+	//ws_server.setup(wss.broadcast, app_lib);
 	wsInteraction.setup(wss.broadcast, app_lib);
 
 	logger.debug('Checking if chaincode is already instantiated or not');
@@ -364,7 +364,7 @@ function setupWebSocket() {
 				}
 			}
 			else if (data) {
-				ws_server.process_msg(ws, data);	
+				//ws_server.process_msg(ws, data);	
 				parseCookie(ws.upgradeReq, null, function(err) {
 			        var sessionID = ws.upgradeReq.signedCookies["connect.sid"];
 			        sessionStore.get(sessionID, function(err, sess) {

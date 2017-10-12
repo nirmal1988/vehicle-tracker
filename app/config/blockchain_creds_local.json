@@ -24,11 +24,7 @@
 				}
 			},
 			"chaincodes": {
-<<<<<<< HEAD
 				"cc": "v5.0"
-=======
-				"cc": "v4.10"
->>>>>>> 2c34326b9e2b1f29bcb9fc268cb198bf45e3e49c
 			},
 			"x-blockDelay": 10000
 		}

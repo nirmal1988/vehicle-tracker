@@ -282,7 +282,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	//register a owner/user
 	app_chainCode.register_owner = function (options, cb) {
 		console.log('');
-		logger.info('Creating a marble owner...');
+		logger.info('Creating a app owner...');
 
 		var opts = {
 			peer_urls: g_options.peer_urls,

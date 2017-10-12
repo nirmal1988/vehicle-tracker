@@ -122,7 +122,7 @@ module.exports = function (logger) {
 	}
 
 	// Format the Block
-	// I don't have the slightest idea if this will hold up, seems ok for marbles =/ 
+	// I don't have the slightest idea if this will hold up, seems ok for app =/ 
 	function format_block(data, blockNumber) {
 		var ret = {
 			parsed: {

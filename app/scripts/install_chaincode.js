@@ -39,7 +39,7 @@ fcw.enrollWithAdminCert(helper.makeEnrollmentOptionsUsingCert(0), function (enro
 		const first_peer = helper.getFirstPeerName(channel);
 		var opts = {
 			peer_urls: [helper.getPeersUrl(first_peer)],
-			path_2_chaincode: 'cc',				//path to chaincode from <marbles root>/chaincode/src/
+			path_2_chaincode: 'cc',				//path to chaincode from <app root>/chaincode/src/
 			chaincode_id: helper.getChaincodeId(),
 			chaincode_version: helper.getChaincodeVersion(),
 			peer_tls_opts: helper.getPeerTlsCertOpts(first_peer)
