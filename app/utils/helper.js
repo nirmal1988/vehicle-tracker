@@ -417,19 +417,19 @@ module.exports = function (config_filename, logger) {
 	// --------------------------------------------------------------------------------
 	// Config Getters
 	// --------------------------------------------------------------------------------
-	// get the marble owner names
-	helper.getMarbleUsernames = function () {
-		return getMarblesField('usernames');
+	// get the owner names
+	helper.getAppUsernames = function () {
+		return getAppField('usernames');
 	};
 
 	// get the app trading company name
 	helper.getCompanyName = function () {
-		return getMarblesField('company');
+		return getAppField('company');
 	};
 
-	// get the marble's server port number
-	helper.getMarblesPort = function () {
-		return getMarblesField('port');
+	// get the app's server port number
+	helper.getAppsPort = function () {
+		return getAppField('port');
 	};
 
 	// get the status of app previous startup
@@ -442,13 +442,13 @@ module.exports = function (config_filename, logger) {
 
 	// get the re-enrollment period in seconds
 	helper.getKeepAliveMs = function () {
-		var sec = getMarblesField('keep_alive_secs');
+		var sec = getAppField('keep_alive_secs');
 		if (!sec) sec = 30;									//default to 30 seconds
 		return (sec * 1000);
 	};
 
 	// safely retrieve app fields
-	function getMarblesField(app_field) {
+	function getAppField(app_field) {
 		try {
 			if (helper.config[app_field]) {
 				return helper.config[app_field];
@@ -475,7 +475,7 @@ module.exports = function (config_filename, logger) {
 	};
 
 	// build the app lib module options
-	helper.makeMarblesLibOptions = function () {
+	helper.makeAppLibOptions = function () {
 		const channel = helper.getChannelId();
 		const first_org = helper.getFirstOrg();
 		const first_ca = helper.getFirstCaName(first_org);
@@ -612,8 +612,7 @@ module.exports = function (config_filename, logger) {
 			logger.warn('----------------------------------------------------------------------');
 			logger.error('Fix this file: ./config/' + helper.getNetworkCredFileName());
 			logger.warn('It must have credentials/hostnames/ports/channels/etc for YOUR network');
-			logger.warn('How/where would I get that info? Are you using the Bluemix service? Then look at these instructions(near the end): ');
-			logger.warn('https://github.com/IBM-Blockchain/marbles/blob/v4.0/docs/install_chaincode.md');
+			logger.warn('How/where would I get that info? Are you using the Bluemix service? Then look at these instructions(near the end): ');			
 			logger.warn('----------------------------------------------------------------------');
 			console.log('\n\n');
 			errors.push('Using default values');
@@ -631,7 +630,7 @@ module.exports = function (config_filename, logger) {
 			logger.warn('---------------------------------------------------------------');
 			logger.warn('----------------------------- Ah! -----------------------------');
 			logger.warn('---------------------------------------------------------------');
-			logger.error('Looks like you are using an old version of marbles chaincode...');
+			logger.error('Looks like you are using an old version of chaincode...');
 			logger.warn('The INTERNAL version of the chaincode found is: v' + v.parsed);
 			logger.warn('But this UI is expecting INTERNAL chaincode version: v' + version[0] + '.x.x');
 			logger.warn('This mismatch won\'t work =(');

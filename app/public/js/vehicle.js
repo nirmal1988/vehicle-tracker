@@ -18,13 +18,6 @@ var valid_dealers = bag.session.allUsers.filter(function(_o){
 	return _o.role == "DEALER";
 });
 var partsBlockChainUrl = "http://win10dv31190.cloudapp.net:3000";// "http://win10marble1409.cloudapp.net:6001";
-// var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS","password":"passw0rd","role":"CUSTOMER"},
-// {"username":"WILLIAM_LOVELL","displayname":"WILLIAM LOVELL","password":"passw0rd","role":"CUSTOMER"},
-// {"username":"GILBERT_SMITH","displayname":"GILBERT SMITH","password":"passw0rd","role":"CUSTOMER"},
-// {"username":"CHRISTINE_DUNNETT","displayname":"CHRISTINE DUNNETT","password":"passw0rd","role":"CUSTOMER"},
-// {"username":"YUKIO_MIFUNE","displayname":"YUKIO MIFUNE","password":"passw0rd","role":"CUSTOMER"}];
-//var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS"}, {"username":"WILLIAM_LOVELL", "GILBERT_SMITH", "CHRISTINE_DUNNETT", "YUKIO_MIFUNE"];
-//console.log(bag.session);
 var allChassisNumbers = [];
 var panels = [
 	{
@@ -88,115 +81,6 @@ var partTypes = [
 	"Tools and Hardware Parts",
 	"Maintenance Parts"
 ];
-
-var partNames = {
-	"Air Intake Parts": [
-		"BMW Secondary Air Pump Kit (540i)",
-		"BMW Turbocharger Installation Kit",
-		"BMW Mass Air Flow Sensor - Bosch"
-	],
-	"Body Exterior Parts": [
-		"BMW Lug Bolt Kit (Set of 20)",
-		"BMW Black Chrome Fender Grille Set",
-		"BMW Tail Light Repair Kit"
-	],
-	"Body Interior Parts": [
-		"BMW Ambient Temperature Sensor Repair Kit",
-		"BMW Carbon Fiber Interior Trim Kit",
-		"BMW Speed Sensor - Bosch"
-	],
-	"Brake Parts": [
-		"BMW Brake Kit - Brembo/Akebono",
-		"BMW Brake Kit - Zimmermann/Textar",
-		"BMW Brake Kit with Lines - Akebono/Brembo"
-	],
-	"Climate Control Parts": [
-		"BMW A/C Compressor - Denso",
-		"BMW Blower Motor Resistor (E38) - Rein",
-		"BMW Heater Hose (E30) - OEM Rein"
-	],
-	"Clutch Parts": [
-		"BMW Clutch Installation Kit",
-		"BMW Dual Mass Flywheel - LuK",
-		"BMW Bell Housing Bolt Set - OEM Rein"
-	],
-	"Cooling System Parts": [
-		"BMW Water Pump Replacement Kit",
-		"BMW E46 Cooling System Overhaul Kit",
-		"BMW Coolant Hose Kit (E38 750iL)"
-	],
-	"Drive Belts Parts": [
-		"BMW Accessory Drive Belt Kit",
-		"BMW A/C Drive Belt Kit",
-		"BMW Belt Tensioner (X5) - INA"
-	],
-	"Driveshaft and Axle Parts": [
-		"BMW Drive Shaft Flex Joint Kit",
-		"BMW Wheel Hub Assembly Front - FAG",
-		"BMW Wheel Bearing Rear - FAG"
-	],
-	"Engine Electrical Parts": [
-		"BMW Ignition Coil Kit (Set of 8) - Bosch",
-		"BMW Spark Plug Kit (Set of 10)",
-		"MW Ignition Coil Kit (Set of 6)"
-	],
-	"Engine Mechanical Parts": [
-		"BMW Cold Climate PCV Breather System Kit",
-		"BMW Standard PCV Breather System Kit",
-		"BMW M52TU/M54 Timing Chain Kit"
-	],
-	"Exhaust Parts": [
-		"BMW Exhaust Clamp (525i) - Rein",
-		"BMW Muffler Front - Eberspaecher",
-		"BMW Exhaust Muffler (Z3 E36) - Bosal"
-	],
-	"Fuel System Parts": [
-		"BMW Fuel Injector Kit (Set of 8) - Genuine BMW",
-		"BMW Idle Control Valve - Bosch",
-		"BMW Fuel Pump and Sender Assembly - VDO"
-	],
-	"Steering Parts": [
-		"BMW Power Steering Reservoir Kit",
-		"BMW Steering Center Link Kit (E39)",
-		"BMW Tie Rod Assembly Kit - Karlyn"
-	],
-	"Suspension Parts": [
-		"BMW 10-Piece Control Arm Kit (E90 E91 E92) - Lemforder",
-		"BMW Strut Assembly Kit - Sachs",
-		"BMW Shock Absorber Kit - 310053KT"
-	],
-	"Transmission Parts": [
-		"BMW Transfer Case Mount Kit (E83 E84) - Corteco",
-		"BMW Manual Trans Short Shift Kit (E30)",
-		"BMW Pinion Shaft Seal Kit"
-	],
-	"Performance Parts Parts": [
-		"BMW FX100 Clutch Kit - Clutch Masters 03040-HD00-D",
-		"BMW Performance Intercooler (Black) - Mishimoto MMINT-E90-07B",
-		"BMW Dual Kompact BOV Kit - Turbosmart TS-0203-1050"
-	],
-	"Manuals and Accessories Parts": [
-		"Hella 3 LED Daytime Running Light Kit",
-		"Haynes Repair Manual ( '78-'85) - Haynes HAY-10215",
-		"BMW Haynes Repair Manual (320i) - Haynes HAY-18025"
-	],
-	"Chemicals and Fluids Parts": [
-		"Automotive Hand Soap (Kit of 10)",
-		"Sylvania Headlight Restoration Kit",
-		"Silicone Gasket Maker (Chemical Sealant) - Reinsozil-t"
-	],
-	"Tools and Hardware Parts": [
-		"Light Bulb (S40 V70 V40) - Osram",
-		"BMW Crush Washer - Reinz",
-		"BMW M60 M62 Timing Tool Kit - CTA",
-		"Power Fluid Extractor and Evacuator - CTA"
-	],
-	"Maintenance Parts": [
-		"BMW Ignition Service KitT",
-		"BMW Oil Change Kit - Genuine BMW/Mahle",
-		"BMW Tune-Up Kit with Oil (740i 740iL)"
-	]	
-};
 
 // =================================================================================
 // On Load
