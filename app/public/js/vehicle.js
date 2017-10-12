@@ -17,7 +17,7 @@ var valid_customers = bag.session.allUsers.filter(function(_o){
 var valid_dealers = bag.session.allUsers.filter(function(_o){
 	return _o.role == "DEALER";
 });
-var partsBlockChainUrl = "http://localhost:3000";// "http://win10marble1409.cloudapp.net:6001";
+var partsBlockChainUrl = "http://win10dv31190.cloudapp.net:3000";// "http://win10marble1409.cloudapp.net:6001";
 // var valid_customers = [{"username":"CHRIS_VARGAS","displayname":"CHRIS VARGAS","password":"passw0rd","role":"CUSTOMER"},
 // {"username":"WILLIAM_LOVELL","displayname":"WILLIAM LOVELL","password":"passw0rd","role":"CUSTOMER"},
 // {"username":"GILBERT_SMITH","displayname":"GILBERT SMITH","password":"passw0rd","role":"CUSTOMER"},
