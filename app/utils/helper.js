@@ -678,8 +678,6 @@ module.exports = function (config_filename, logger) {
 			logger.warn('----------------------------------------------------------------------');
 			logger.error('Fix this file: ./config/' + helper.getNetworkCredFileName());
 			logger.warn('----------------------------------------------------------------------');
-			logger.warn('See this file for help:');
-			logger.warn('https://github.com/IBM-Blockchain/marbles/blob/v4.0/docs/config_file.md');
 			logger.warn('----------------------------------------------------------------------');
 			console.log('\n\n');
 			return errors;
@@ -720,9 +718,6 @@ module.exports = function (config_filename, logger) {
 			}
 			logger.warn('----------------------------------------------------------------------');
 			logger.error('Fix this file: ./config/' + helper.getNetworkCredFileName());
-			logger.warn('----------------------------------------------------------------------');
-			logger.warn('See this file for help:');
-			logger.warn('https://github.com/IBM-Blockchain/marbles/blob/v4.0/docs/config_file.md');
 			logger.warn('----------------------------------------------------------------------');
 			console.log('\n\n');
 			return errors;

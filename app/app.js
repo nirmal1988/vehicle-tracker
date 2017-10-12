@@ -48,8 +48,7 @@ var wss = {};
 var start_up_states = {												//app Startup Steps
 	checklist: { state: 'waiting', step: 'step1' },					// Step 1 - check config files for somewhat correctness
 	enrolling: { state: 'waiting', step: 'step2' },					// Step 2 - enroll the admin
-	find_chaincode: { state: 'waiting', step: 'step3' },			// Step 3 - find the chaincode on the channel
-	register_owners: { state: 'waiting', step: 'step4' },			// Step 4 - create the marble owners
+	find_chaincode: { state: 'waiting', step: 'step3' },			// Step 3 - find the chaincode on the channel	
 };
 
 ////////  Pathing and Module Setup  ////////

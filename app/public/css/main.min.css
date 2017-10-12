@@ -203,7 +203,6 @@ h2 {
 #logo,
 .ball,
 .createLegend,
-.marblesWrap,
 .nav {
     display: inline-block
 }
@@ -400,11 +399,6 @@ a:visited {
 .hint {
     font-weight: 300;
     color: #F1D356
-}
-.marblesWrap {
-    width: 42%;
-    text-align: right;
-    color: #fff
 }
 .legend {
     font-size: 30px;

@@ -290,12 +290,6 @@ label {
   position: relative;
   z-index: 4; }
 
-.marblesWrap {
-  width: 42%;
-  display: inline-block;
-  text-align: right;
-  color: #fff; }
-
 .legend {
   font-size: 30px;
   border-bottom: 1px #D4DCDC solid;

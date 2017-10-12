@@ -279,36 +279,6 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 		fcw.query_chaincode(enrollObj, opts, cb);
 	};
 
-	// //register a owner/user
-	// app_chainCode.register_owner = function (options, cb) {
-	// 	console.log('');
-	// 	logger.info('Creating a app owner...');
-
-	// 	var opts = {
-	// 		peer_urls: g_options.peer_urls,
-	// 		peer_tls_opts: g_options.peer_tls_opts,
-	// 		channel_id: g_options.channel_id,
-	// 		chaincode_id: g_options.chaincode_id,
-	// 		chaincode_version: g_options.chaincode_version,
-	// 		event_url: g_options.event_url,
-	// 		endorsed_hook: options.endorsed_hook,
-	// 		ordered_hook: options.ordered_hook,
-	// 		cc_function: 'init_owner',
-	// 		cc_args: [
-	// 			'o' + leftPad(Date.now() + randStr(5), 19),
-	// 			options.args.marble_owner,
-	// 			options.args.owners_company
-	// 		],
-	// 	};
-	// 	fcw.invoke_chaincode(enrollObj, opts, function (err, resp) {
-	// 		if (cb) {
-	// 			if (!resp) resp = {};
-	// 			resp.id = opts.cc_args[0];				//pass owner id back
-	// 			cb(err, resp);
-	// 		}
-	// 	});
-	// };
-
 	//build full name
 	app_chainCode.build_owner_name = function (username, company) {
 		return build_owner_name(username, company);
