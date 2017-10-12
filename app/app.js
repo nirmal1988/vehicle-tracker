@@ -32,7 +32,6 @@ var logger = new (winston.Logger)({
 	]
 });
 
-
 //FOR LOCAL
 process.env["creds_filename"]="app_local.json";
 var misc = require('./utils/misc.js')(logger);					//random non-blockchain related functions
@@ -63,7 +62,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded()); 
 app.use(parseCookie);
-app.use("/cc/summary", serve_static(path.join(__dirname, "cc_summaries")) );												//for chaincode_parts investigator
+//app.use("/cc/summary", serve_static(path.join(__dirname, "cc_summaries")) );												//for chaincode_parts investigator
 app.use( serve_static(path.join(__dirname, "public"), {maxAge: "1d", setHeaders: setCustomCC}) );							//1 day cache
 //app.use( serve_static(path.join(__dirname, 'public')) );
 app.use(session({secret:"Somethignsomething1234!test", resave:true, saveUninitialized:true, store: sessionStore}));

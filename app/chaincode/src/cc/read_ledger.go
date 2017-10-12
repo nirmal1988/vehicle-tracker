@@ -20,7 +20,6 @@ under the License.
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -66,204 +65,6 @@ func read(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	fmt.Println("- end read")
 	return shim.Success(valAsbytes)                  //send it onward
 }
-
-// ============================================================================================================================
-// Get everything we need (owners + marbles + companies)
-//
-// Inputs - none
-//
-// Returns:
-// {
-//	"owners": [{
-//			"id": "o99999999",
-//			"company": "United Marbles"
-//			"username": "alice"
-//	}],
-//	"marbles": [{
-//		"id": "m1490898165086",
-//		"color": "white",
-//		"docType" :"marble",
-//		"owner": {
-//			"company": "United Marbles"
-//			"username": "alice"
-//		},
-//		"size" : 35
-//	}]
-// }
-// ============================================================================================================================
-func read_everything(stub shim.ChaincodeStubInterface) pb.Response {
-	type Everything struct {
-		Owners   []Owner   `json:"owners"`
-		Marbles  []Marble  `json:"marbles"`
-	}
-	var everything Everything
-
-	// ---- Get All Marbles ---- //
-	resultsIterator, err := stub.GetStateByRange("m0", "m9999999999999999999")
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	defer resultsIterator.Close()
-	
-	for resultsIterator.HasNext() {
-		aKeyValue, err := resultsIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		queryKeyAsStr := aKeyValue.Key
-		queryValAsBytes := aKeyValue.Value
-		fmt.Println("on marble id - ", queryKeyAsStr)
-		var marble Marble
-		json.Unmarshal(queryValAsBytes, &marble)                  //un stringify it aka JSON.parse()
-		everything.Marbles = append(everything.Marbles, marble)   //add this marble to the list
-	}
-	fmt.Println("marble array - ", everything.Marbles)
-
-	// ---- Get All Owners ---- //
-	ownersIterator, err := stub.GetStateByRange("o0", "o9999999999999999999")
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	defer ownersIterator.Close()
-
-	for ownersIterator.HasNext() {
-		aKeyValue, err := ownersIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		queryKeyAsStr := aKeyValue.Key
-		queryValAsBytes := aKeyValue.Value
-		fmt.Println("on owner id - ", queryKeyAsStr)
-		var owner Owner
-		json.Unmarshal(queryValAsBytes, &owner)                   //un stringify it aka JSON.parse()
-
-		if owner.Enabled {                                        //only return enabled owners
-			everything.Owners = append(everything.Owners, owner)  //add this marble to the list
-		}
-	}
-	fmt.Println("owner array - ", everything.Owners)
-
-	//change to array of bytes
-	everythingAsBytes, _ := json.Marshal(everything)              //convert to array of bytes
-	return shim.Success(everythingAsBytes)
-}
-
-// ============================================================================================================================
-// Get history of asset
-//
-// Shows Off GetHistoryForKey() - reading complete history of a key/value
-//
-// Inputs - Array of strings
-//  0
-//  id
-//  "m01490985296352SjAyM"
-// ============================================================================================================================
-func getHistory(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	type AuditHistory struct {
-		TxId    string   `json:"txId"`
-		Value   Marble   `json:"value"`
-	}
-	var history []AuditHistory;
-	var marble Marble
-
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1")
-	}
-
-	marbleId := args[0]
-	fmt.Printf("- start getHistoryForMarble: %s\n", marbleId)
-
-	// Get History
-	resultsIterator, err := stub.GetHistoryForKey(marbleId)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	defer resultsIterator.Close()
-
-	for resultsIterator.HasNext() {
-		historyData, err := resultsIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-
-		var tx AuditHistory
-		tx.TxId = historyData.TxId                     //copy transaction id over
-		json.Unmarshal(historyData.Value, &marble)     //un stringify it aka JSON.parse()
-		if historyData.Value == nil {                  //marble has been deleted
-			var emptyMarble Marble
-			tx.Value = emptyMarble                 //copy nil marble
-		} else {
-			json.Unmarshal(historyData.Value, &marble) //un stringify it aka JSON.parse()
-			tx.Value = marble                      //copy marble over
-		}
-		history = append(history, tx)              //add this tx to the list
-	}
-	fmt.Printf("- getHistoryForMarble returning:\n%s", history)
-
-	//change to array of bytes
-	historyAsBytes, _ := json.Marshal(history)     //convert to array of bytes
-	return shim.Success(historyAsBytes)
-}
-
-// ============================================================================================================================
-// Get history of asset - performs a range query based on the start and end keys provided.
-//
-// Shows Off GetStateByRange() - reading a multiple key/values from the ledger
-//
-// Inputs - Array of strings
-//       0     ,    1
-//   startKey  ,  endKey
-//  "marbles1" , "marbles5"
-// ============================================================================================================================
-func getMarblesByRange(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
-	}
-
-	startKey := args[0]
-	endKey := args[1]
-
-	resultsIterator, err := stub.GetStateByRange(startKey, endKey)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	defer resultsIterator.Close()
-
-	// buffer is a JSON array containing QueryResults
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
-
-	bArrayMemberAlreadyWritten := false
-	for resultsIterator.HasNext() {
-		aKeyValue, err := resultsIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		queryResultKey := aKeyValue.Key
-		queryResultValue := aKeyValue.Value
-
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
-		}
-		buffer.WriteString("{\"Key\":")
-		buffer.WriteString("\"")
-		buffer.WriteString(queryResultKey)
-		buffer.WriteString("\"")
-
-		buffer.WriteString(", \"Record\":")
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(queryResultValue))
-		buffer.WriteString("}")
-		bArrayMemberAlreadyWritten = true
-	}
-	buffer.WriteString("]")
-
-	fmt.Printf("- getMarblesByRange queryResult:\n%s\n", buffer.String())
-
-	return shim.Success(buffer.Bytes())
-}
-
 
 // ============================================================================================================================
 // Get Part Details
@@ -459,14 +260,116 @@ func getAllVehicles(stub shim.ChaincodeStubInterface, user string) pb.Response {
 		if user != "" {
 			// return only customer vehicles
 			if sb.Owner.Name == user {
-				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber);
+				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber +"-"+ sb.LicensePlateNumber);
 			} else if sb.Dealer.Name == user {
-				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber);
+				rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber +"-"+ sb.LicensePlateNumber);
 			}
 		} else if user == "" {
 			// return all vehicles for mfr, dealer, service center user
-			rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber);
+			rab.Vehicles = append(rab.Vehicles, sb.VehicleId +"-"+ sb.ChassisNumber +"-"+ sb.LicensePlateNumber);
 		}
+	}
+
+	rabAsBytes, _ := json.Marshal(rab)
+
+	///return rabAsBytes, nil
+	return shim.Success(rabAsBytes)
+}
+
+
+// ============================================================================================================================
+// Get All Vehicles
+// ============================================================================================================================
+func getAllVehicleDetails(stub shim.ChaincodeStubInterface, filter string, filterValue string) pb.Response {	
+	
+	fmt.Println("getAllVehicles:Looking for All Vehicles");
+
+	//get the AllVehicles index
+	allBAsBytes, err := stub.GetState("allVehicles")
+	if err != nil {
+		//return nil, errors.New("Failed to get all Vehicles")
+		return shim.Error(err.Error())
+	}
+
+	var res AllVehicles
+	err = json.Unmarshal(allBAsBytes, &res)
+	//fmt.Println(allBAsBytes);
+	if err != nil {
+		fmt.Println("Printing Unmarshal error:-");
+		fmt.Println(err);
+		//return nil, errors.New("Failed to Unmarshal all Vehicles")
+		return shim.Error(err.Error())
+	}
+
+	var rab AllVehicleDetails
+
+	for i := range res.Vehicles{
+
+		sbAsBytes, err := stub.GetState(res.Vehicles[i])
+		if err != nil {
+			//return nil, errors.New("Failed to get Vehicle")
+			return shim.Error(err.Error())
+		}
+		var sb Vehicle
+		json.Unmarshal(sbAsBytes, &sb)
+			
+		if strings.ToLower(filter) == "vin" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with vin
+			if strings.ToLower(sb.Vin) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "user" && strings.ToLower(filterValue) == "all"{
+		// all vehicles linked with customers
+			if sb.Owner.Name != "" {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "user" && strings.ToLower(filterValue) != "all"{
+		// all vehicles linked with perticular customer
+			if strings.ToLower(sb.Owner.Name) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "dealer" && strings.ToLower(filterValue) == "all"{
+		// all vehicles linked with dealer
+			if sb.Dealer.Name != "" {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "dealer" && strings.ToLower(filterValue) != "all"{
+		// all vehicles linked with perticular dealer
+			if strings.ToLower(sb.Dealer.Name) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "model" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with perticular model
+			if strings.ToLower(sb.Make) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "variant" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with perticular variant
+			if strings.ToLower(sb.Variant) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "engine" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with perticular engine
+			if strings.ToLower(sb.Engine) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "gearbox" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with perticular gear box
+			if strings.ToLower(sb.GearBox) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "color" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with perticular color
+			if strings.ToLower(sb.Color) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		} else if strings.ToLower(filter) == "lpn" && strings.ToLower(filterValue) != ""{
+		// all vehicles linked with perticular LicensePlateNumber
+			if strings.ToLower(sb.LicensePlateNumber) == strings.ToLower(filterValue) {
+				rab.Vehicles = append(rab.Vehicles, sb);
+			}
+		}
+
 	}
 
 	rabAsBytes, _ := json.Marshal(rab)

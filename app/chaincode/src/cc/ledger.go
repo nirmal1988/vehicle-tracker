@@ -21,35 +21,10 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"encoding/json"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
-
-// ----- Marbles ----- //
-type Marble struct {
-	ObjectType string        `json:"docType"` //field for couchdb
-	Id       string          `json:"id"`      //the fieldtags are needed to keep case from bouncing around
-	Color      string        `json:"color"`
-	Size       int           `json:"size"`    //size in mm of marble
-	Owner      OwnerRelation `json:"owner"`
-}
-
-// ----- Owners ----- //
-type Owner1 struct {
-	ObjectType string `json:"docType"`     //field for couchdb
-	Id         string `json:"id"`
-	Username   string `json:"username"`
-	Company    string `json:"company"`
-	Enabled    bool   `json:"enabled"`     //disabled owners will not be visible to the application
-}
-
-type OwnerRelation struct {
-	Id         string `json:"id"`
-	Username   string `json:"username"`    //this is mostly cosmetic/handy, the real relation is by Id not Username
-	Company    string `json:"company"`     //this is mostly cosmetic/handy, the real relation is by Id not Company
-}
 
 // ============================================================================================================================
 // Main
@@ -62,7 +37,6 @@ func main() {
 }
 
 // Vehicle tracker start
-
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
@@ -92,7 +66,6 @@ type Vehicle struct {
 	VehicleService		[]VehicleService `json:"vehicleService"`
 }
 
-
 type VehicleService struct {	
 	ServiceDescription		string  `json:"serviceDescription"`
 	Parts		[]Part `json:"parts"`
@@ -113,12 +86,6 @@ type Owner struct {
 	Name 		string  `json:"name"`
 	PhoneNumber 		string  `json:"phoneNumber"`
 	Email 		string  `json:"email"`
-
-	ObjectType string `json:"docType"`     //field for couchdb
-	Id         string `json:"id"`
-	Username   string `json:"username"`
-	Company    string `json:"company"`
-	Enabled    bool   `json:"enabled"`     //disabled owners will not be visible to the application
 }
 
 type Dealer struct {
@@ -156,6 +123,10 @@ type AllVehicles struct{
 	Vehicles []string `json:"vehicles"`
 }
 
+type AllVehicleDetails struct{
+	Vehicles []Vehicle `json:"vehicles"`
+}
+
 
 type AllParts struct{
 	Parts []string `json:"parts"`
@@ -166,8 +137,6 @@ type AllParts struct{
 // ============================================================================================================================
 // Init - initialize the chaincode 
 //
-// Marbles does not require initialization, so let's run a simple test instead.
-//
 // Shows off PutState() and how to pass an input argument to chaincode.
 //
 // Inputs - Array of strings
@@ -176,9 +145,8 @@ type AllParts struct{
 // Returns - shim.Success or error
 // ============================================================================================================================
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	fmt.Println("Marbles Is Starting Up")
+	fmt.Println("App Is Starting Up")
 	_, args := stub.GetFunctionAndParameters()
-	var Aval int
 	var err error
 	
 	fmt.Println("Init() args count:", len(args))
@@ -193,30 +161,10 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 			fmt.Println("args[0] is empty... must be upgrading")
 		} else {
 			fmt.Println("args[0] is not empty, must be instantiating")
-
-			// convert numeric string to integer
-			Aval, err = strconv.Atoi(args[0])
-			if err != nil {
-				return shim.Error("Expecting a numeric string argument to Init() for instantiate")
-			}
-
-			// this is a very simple test. let's write to the ledger and error out on any errors
-			// it's handy to read this right away to verify network is healthy if it wrote the correct value
-			err = stub.PutState("selftest", []byte(strconv.Itoa(Aval)))
-			if err != nil {
-				return shim.Error(err.Error())                  //self-test fail
-			}
 		}
 	}
 
-	// store compaitible marbles application version
-	err = stub.PutState("marbles_ui", []byte("4.0.0"))
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
 	// Vehicle Tracker start
-
 	var vehicles AllVehicles
 	var parts AllParts
 
@@ -236,7 +184,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
 	// Vehicle tracker end
 
-	fmt.Println(" - ready for action")                          //self-test pass
+	fmt.Println("ready for action")                          //self-test pass
 	return shim.Success(nil)
 }
 
@@ -254,24 +202,6 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return t.Init(stub)
 	} else if function == "read" {             //generic read ledger
 		return read(stub, args)
-	} else if function == "write" {            //generic writes to ledger
-		return write(stub, args)
-	} else if function == "delete_marble" {    //deletes a marble from state
-		return delete_marble(stub, args)
-	} else if function == "init_marble" {      //create a new marble
-		return init_marble(stub, args)
-	} else if function == "set_owner" {        //change owner of a marble
-		return set_owner(stub, args)
-	} else if function == "init_owner"{        //create a new marble owner
-		return init_owner(stub, args)
-	} else if function == "read_everything"{   //read everything, (owners + marbles + companies)
-		return read_everything(stub)
-	} else if function == "getHistory"{        //read history of a marble (audit)
-		return getHistory(stub, args)
-	} else if function == "getMarblesByRange"{ //read a bunch of marbles by start and stop id
-		return getMarblesByRange(stub, args)
-	} else if function == "disable_owner"{     //disable a marble owner from appearing on the UI
-		return disable_owner(stub, args)
 	} else if function == "getPart" { 
 		return getPart(stub, args[0])
 	} else if function == "getAllParts" { 
@@ -298,7 +228,6 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("Received unknown invoke function name - " + function)
 	return shim.Error("Received unknown invoke function name - '" + function + "'")
 }
-
 
 // ============================================================================================================================
 // Query - legacy function
